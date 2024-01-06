@@ -5,12 +5,18 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UsersRepository } from './users.repository';
 import { UsersQueryRepository } from './users.query.repository';
+import { PasswordAdapter } from '../adapter/password.adapter';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UsersRepository, UsersQueryRepository],
+  providers: [
+    UsersService,
+    UsersRepository,
+    UsersQueryRepository,
+    PasswordAdapter,
+  ],
 })
 export class UsersModule {}

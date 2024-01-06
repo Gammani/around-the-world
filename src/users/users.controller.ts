@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   CreateUserInputModelType,
   UserWithPaginationViewModel,
@@ -37,8 +46,21 @@ export class UsersController {
     return foundUsers;
   }
 
+  @Get(':id')
+  async findUserById(@Param('id') userId: string) {
+    return this.usersService.findUserById(userId);
+  }
+
   @Post()
-  createUser(@Body() inputUserModel: CreateUserInputModelType) {
+  async createUserByAdmin(@Body() inputUserModel: CreateUserInputModelType) {
     return this.usersService.createUserByAdmin(inputUserModel);
+  }
+
+  @Delete(':id')
+  async removeUserByAdmin(@Param('id') userId: string) {
+    const userRemoved = await this.usersService.removeUserByAdmin(userId);
+    if (!userRemoved) {
+      throw new NotFoundException();
+    }
   }
 }
