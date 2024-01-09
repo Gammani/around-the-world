@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { CreateUserInputModelType } from '../feature/model type/UserViewModel';
+import { CreateInputUserModelType } from '../feature/model type/UserViewModel';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns/add';
 
@@ -71,7 +71,7 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.statics.createUser = (
-  dto: CreateUserInputModelType,
+  dto: CreateInputUserModelType,
   passwordHash: string,
   UserModel: Model<UserDocument> & UserModelStaticType,
 ) => {
@@ -100,7 +100,7 @@ UserSchema.statics.createUser = (
 
 export type UserModelStaticType = {
   createUser: (
-    dto: CreateUserInputModelType,
+    dto: CreateInputUserModelType,
     passwordHash: string,
     UserModel: Model<UserDocument> & UserModelStaticType,
   ) => {

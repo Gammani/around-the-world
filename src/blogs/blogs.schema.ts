@@ -1,6 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
+import { CreateInputBlogModelType } from '../feature/model type/BlogViewModel';
+
+export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
@@ -34,4 +37,31 @@ export class Blog {
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
-export type BlogDocument = HydratedDocument<Blog>;
+BlogSchema.statics.createBlog = (
+  dto: CreateInputBlogModelType,
+  BlogModel: Model<BlogDocument> & BlogModelStaticType,
+) => {
+  const blog = new BlogModel();
+  blog._id = new ObjectId();
+  blog.name = dto.name;
+  blog.description = dto.description;
+  blog.websiteUrl = dto.websiteUrl;
+  blog.createdAt = new Date().toISOString();
+  blog.isMembership = true;
+
+  return blog;
+};
+
+export type BlogModelStaticType = {
+  createBlog: (
+    dto: CreateInputBlogModelType,
+    BlogModel: Model<BlogDocument> & BlogModelStaticType,
+  ) => {
+    _id: ObjectId;
+    name: string;
+    description: string;
+    websiteUrl: string;
+    createdAt: string;
+    isMembership: boolean;
+  };
+};

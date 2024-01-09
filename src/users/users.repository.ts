@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from './users.schema';
 import { Model } from 'mongoose';
-import { CreatedUserModel } from '../feature/model type/UserViewModel';
+import { CreatedUserViewModel } from '../feature/model type/UserViewModel';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 
@@ -10,9 +10,13 @@ export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
   async findUserById(userId: string) {
+    if (!ObjectId.isValid(userId)) {
+      return false;
+      // throw new Error('Invalid userId format');
+    }
     return this.UserModel.findById(userId);
   }
-  async createUser(createdUserDto: any): Promise<CreatedUserModel> {
+  async createUserByAdmin(createdUserDto: any): Promise<CreatedUserViewModel> {
     const newUser = await createdUserDto.save();
     return {
       id: newUser._id.toString(),

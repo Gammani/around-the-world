@@ -63,7 +63,7 @@ export class UsersQueryRepository {
       id: user._id.toString(),
       login: user.accountData.login,
       email: user.accountData.email,
-      createdAt: user.accountData.createdAt, // преобразование даты в строку
+      createdAt: user.accountData.createdAt,
     }));
 
     return {

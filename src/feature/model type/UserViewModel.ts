@@ -4,12 +4,12 @@ export type UserViewModel = {
   email: string;
   createdAt: string;
 };
-export type CreateUserInputModelType = {
+export type CreateInputUserModelType = {
   login: string;
   password: string;
   email: string;
 };
-export type CreatedUserModel = {
+export type CreatedUserViewModel = {
   id: string;
   login: string;
   email: string;

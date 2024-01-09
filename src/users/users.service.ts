@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
-  CreatedUserModel,
-  CreateUserInputModelType,
+  CreatedUserViewModel,
+  CreateInputUserModelType,
 } from '../feature/model type/UserViewModel';
 import { UsersRepository } from './users.repository';
 import { InjectModel } from '@nestjs/mongoose';
@@ -19,8 +19,8 @@ export class UsersService {
   ) {}
 
   async createUserByAdmin(
-    inputUserModel: CreateUserInputModelType,
-  ): Promise<CreatedUserModel> {
+    inputUserModel: CreateInputUserModelType,
+  ): Promise<CreatedUserViewModel> {
     const passwordHash = await this.passwordAdapter.createPasswordHash(
       inputUserModel.password,
     );
@@ -29,7 +29,7 @@ export class UsersService {
       passwordHash,
       this.UserModel,
     );
-    return await this.usersRepository.createUser(createdUser);
+    return await this.usersRepository.createUserByAdmin(createdUser);
   }
   async findUserById(userId: string) {
     return this.usersRepository.findUserById(userId);

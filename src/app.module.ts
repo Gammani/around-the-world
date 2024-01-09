@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { RemoveAllModule } from './testing.removeAll/removeAll.module';
+import { BlogModule } from './blogs/blog.module';
+import { PostModule } from './posts/post.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { RemoveAllModule } from './testing.removeAll/removeAll.module';
     }),
     RemoveAllModule,
     UsersModule,
+    BlogModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],
