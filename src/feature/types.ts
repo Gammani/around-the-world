@@ -3,3 +3,9 @@ export enum LikeStatus {
   Dislike = 'Dislike',
   None = 'None',
 }
+
+export type LikesInfoType = {
+  likesCount: number;
+  dislikesCount: number;
+  myStatus: LikeStatus;
+};

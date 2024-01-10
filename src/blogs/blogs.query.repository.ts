@@ -73,7 +73,7 @@ export class BlogsQueryRepository {
         isMembership: foundBlog.isMembership,
       };
     } else {
-      return null;
+      throw new NotFoundException();
     }
   }
 }

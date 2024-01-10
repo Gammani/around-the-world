@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { BlogsQueryRepository } from './blogs.query.repository';
 import {
-  BlogViewModel,
   BlogWithPaginationViewModel,
   CreateInputBlogModelType,
   UpdateInputBlogModelType,
@@ -74,7 +73,7 @@ export class BlogsController {
     },
     @Body() userId?: string,
   ) {
-    const foundBlog: PostsWithPaginationViewModel =
+    const foundPostsByBlogId: PostsWithPaginationViewModel =
       await this.postQueryRepository.findPosts(
         query.pageNumber,
         query.pageSize,
@@ -83,8 +82,8 @@ export class BlogsController {
         userId,
         blogId,
       );
-    if (foundBlog) {
-      return foundBlog;
+    if (foundPostsByBlogId) {
+      return foundPostsByBlogId;
     } else {
       throw new NotFoundException();
     }
@@ -110,12 +109,7 @@ export class BlogsController {
 
   @Get(':id')
   async findBlogById(@Param('id') blogId: string) {
-    const foundBlog = await this.blogQueryRepository.findBlogById(blogId);
-    if (foundBlog) {
-      return foundBlog;
-    } else {
-      throw new NotFoundException();
-    }
+    return await this.blogQueryRepository.findBlogById(blogId);
   }
 
   @Put(':id')

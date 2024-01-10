@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Post,
@@ -12,6 +12,7 @@ import {
   CreateInputPostModelType,
   CreateInputPostWithBlogIdModelType,
   PostViewModel,
+  UpdateInputPostModelType,
 } from '../feature/model type/PostViewModel';
 
 @Injectable()
@@ -23,6 +24,10 @@ export class PostsService {
       PostModelStaticType,
     private postsRepository: PostsRepository,
   ) {}
+
+  async findPostById(postId: string): Promise<PostDocument | null> {
+    return await this.postsRepository.findPostById(postId);
+  }
 
   async createPostByAdminWithBlogId(
     createInputPostModel: CreateInputPostModelType,
@@ -50,5 +55,22 @@ export class PostsService {
     );
 
     return await this.postsRepository.createPostByAdmin(createdPost);
+  }
+
+  async updatePostByAdmin(
+    postId: string,
+    inputPostModel: UpdateInputPostModelType,
+  ): Promise<boolean> {
+    return await this.postsRepository.updatePostByAdmin(postId, inputPostModel);
+  }
+
+  async removePostByAdmin(postId: string): Promise<boolean> {
+    const foundPost = await this.postsRepository.findPostById(postId);
+    if (foundPost) {
+      await this.postsRepository.deletePostById(postId);
+      return false;
+    } else {
+      throw new NotFoundException();
+    }
   }
 }

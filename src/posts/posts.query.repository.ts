@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from './posts.schema';
 import { Model } from 'mongoose';
@@ -7,6 +7,7 @@ import { PostLike, PostLikeDocument } from '../postLike/postsLike.schema';
 import {
   customFilteredPostLikesType,
   PostsWithPaginationViewModel,
+  PostViewModel,
 } from '../feature/model type/PostViewModel';
 import { ObjectId } from 'mongodb';
 
@@ -147,6 +148,58 @@ export class PostsQueryRepository {
       };
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async findPostById(
+    postId: string,
+    userId?: string,
+  ): Promise<PostViewModel | null> {
+    if (!ObjectId.isValid(postId)) {
+      throw new NotFoundException();
+    }
+    const foundPost = await this.PostModel.findById(postId);
+    if (foundPost) {
+      const likesCount = await this.PostLikeModel.find({
+        postId: new ObjectId(postId),
+        likeStatus: LikeStatus.Like,
+      }).countDocuments({});
+      const dislikesCount = await this.PostLikeModel.find({
+        postId: new ObjectId(postId),
+        likeStatus: LikeStatus.Dislike,
+      }).countDocuments({});
+      const myStatus = await this.PostLikeModel.findOne({
+        postId: new ObjectId(postId),
+        userId,
+      });
+      const newestLikes = await this.PostLikeModel.find({
+        postId: new ObjectId(postId),
+        likeStatus: LikeStatus.Like,
+      })
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(3);
+
+      return {
+        id: foundPost._id.toString(),
+        title: foundPost.title,
+        shortDescription: foundPost.shortDescription,
+        content: foundPost.content,
+        blogId: foundPost.blogId.toString(),
+        blogName: foundPost.blogName,
+        createdAt: foundPost.createdAt,
+        extendedLikesInfo: {
+          likesCount: likesCount,
+          dislikesCount: dislikesCount,
+          myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
+          newestLikes: newestLikes.map((nl) => ({
+            addedAt: nl.addedAt.toString(),
+            userId: nl.userId.toString(),
+            login: nl.login,
+          })),
+        },
+      };
+    } else {
+      return null;
     }
   }
 }

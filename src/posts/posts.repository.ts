@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Post,
@@ -6,7 +6,10 @@ import {
   PostModelWithUriBlogIdStaticType,
 } from './posts.schema';
 import { Model } from 'mongoose';
-import { PostViewModel } from '../feature/model type/PostViewModel';
+import {
+  PostViewModel,
+  UpdateInputPostModelType,
+} from '../feature/model type/PostViewModel';
 import { LikeStatus } from '../feature/types';
 import { ObjectId } from 'mongodb';
 
@@ -16,6 +19,14 @@ export class PostsRepository {
     @InjectModel(Post.name)
     private PostModel: Model<PostDocument & PostModelWithUriBlogIdStaticType>,
   ) {}
+
+  async findPostById(postId: string): Promise<PostDocument | null> {
+    if (!ObjectId.isValid(postId)) {
+      throw new NotFoundException();
+    } else {
+      return this.PostModel.findById(postId);
+    }
+  }
 
   async createPostByAdmin(createdPostDto: any): Promise<PostViewModel> {
     const newPost = await createdPostDto.save();
@@ -35,6 +46,34 @@ export class PostsRepository {
         newestLikes: [],
       },
     };
+  }
+
+  async updatePostByAdmin(
+    postId: string,
+    inputPostModel: UpdateInputPostModelType,
+  ): Promise<boolean> {
+    const result = await this.PostModel.updateOne(
+      { _id: new ObjectId(postId) },
+      {
+        $set: {
+          title: inputPostModel.title,
+          shortDescription: inputPostModel.shortDescription,
+          content: inputPostModel.content,
+          blogId: inputPostModel.blogId,
+        },
+      },
+    );
+    return result.matchedCount === 1;
+  }
+
+  async deletePostById(postId: string): Promise<boolean> {
+    if (!ObjectId.isValid(postId)) {
+      throw new NotFoundException();
+    }
+    const result = await this.PostModel.deleteOne({
+      _id: new ObjectId(postId),
+    });
+    return result.deletedCount === 1;
   }
 
   async deleteAllPostsByBlogId(blogId: string) {

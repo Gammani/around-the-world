@@ -54,3 +54,9 @@ export type PostsWithPaginationViewModel = {
   totalCount: number;
   items: PostViewModel[];
 };
+export type UpdateInputPostModelType = {
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+};
