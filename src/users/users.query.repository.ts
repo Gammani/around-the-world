@@ -35,13 +35,13 @@ export class UsersQueryRepository {
 
     if (searchLoginTerm || searchEmailTerm) {
       totalCount = await this.UserModel.countDocuments({
-        $and: [
+        $or: [
           { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
           { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
         ],
       });
       users = await this.UserModel.find({
-        $and: [
+        $or: [
           { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
           { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
         ],
