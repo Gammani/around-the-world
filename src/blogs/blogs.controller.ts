@@ -39,19 +39,19 @@ export class BlogsController {
     @Query()
     query: {
       searchNameTerm: string | undefined;
-      sortByQuery: string | undefined;
-      sortDirectionQuery: string | undefined;
-      pageNumberQuery: string | undefined;
-      pageSizeQuery: string | undefined;
+      sortBy: string | undefined;
+      sortDirection: string | undefined;
+      pageNumber: string | undefined;
+      pageSize: string | undefined;
     },
   ) {
     const foundBlogs: BlogWithPaginationViewModel =
       await this.blogQueryRepository.findAllBlogs(
         query.searchNameTerm,
-        query.sortByQuery,
-        query.sortDirectionQuery,
-        query.pageNumberQuery,
-        query.pageSizeQuery,
+        query.sortBy,
+        query.sortDirection,
+        query.pageNumber,
+        query.pageSize,
       );
     return foundBlogs;
   }

@@ -65,12 +65,6 @@ export class PostsService {
   }
 
   async removePostByAdmin(postId: string): Promise<boolean> {
-    const foundPost = await this.postsRepository.findPostById(postId);
-    if (foundPost) {
-      await this.postsRepository.deletePostById(postId);
-      return false;
-    } else {
-      throw new NotFoundException();
-    }
+    return await this.postsRepository.deletePostById(postId);
   }
 }

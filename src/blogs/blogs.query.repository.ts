@@ -24,6 +24,7 @@ export class BlogsQueryRepository {
       ? 1
       : Number(pageNumberQuery);
     const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
+    console.log(pageSizeQuery);
     const sortBy = sortByQuery ? sortByQuery : 'createdAt';
     const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1;
 

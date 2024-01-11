@@ -100,7 +100,12 @@ export class PostsController {
 
   @Get(':id')
   async findPostById(@Param('id') postId: string) {
-    return await this.postsQueryRepository.findPostById(postId);
+    const foundPost = await this.postService.findPostById(postId);
+    if (foundPost) {
+      return await this.postsQueryRepository.findPostById(postId);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   @Put(':id')
@@ -120,6 +125,11 @@ export class PostsController {
   @Delete(':id')
   @HttpCode(204)
   async removePostByAdmin(@Param('id') postId: string) {
-    await this.postService.removePostByAdmin(postId);
+    const foundPost = await this.postService.findPostById(postId);
+    if (foundPost) {
+      await this.postService.removePostByAdmin(postId);
+    } else {
+      throw new NotFoundException();
+    }
   }
 }
