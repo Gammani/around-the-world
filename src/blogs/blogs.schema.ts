@@ -47,7 +47,7 @@ BlogSchema.statics.createBlog = (
   blog.description = dto.description;
   blog.websiteUrl = dto.websiteUrl;
   blog.createdAt = new Date().toISOString();
-  blog.isMembership = true;
+  blog.isMembership = false;
 
   return blog;
 };

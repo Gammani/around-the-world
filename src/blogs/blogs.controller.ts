@@ -73,16 +73,17 @@ export class BlogsController {
     },
     @Body() userId?: string,
   ) {
-    const foundPostsByBlogId: PostsWithPaginationViewModel =
-      await this.postQueryRepository.findPosts(
-        query.pageNumber,
-        query.pageSize,
-        query.sortBy,
-        query.sortDirection,
-        userId,
-        blogId,
-      );
-    if (foundPostsByBlogId) {
+    const foundBlogById = await this.blogService.findBlogById(blogId);
+    if (foundBlogById) {
+      const foundPostsByBlogId: PostsWithPaginationViewModel =
+        await this.postQueryRepository.findPosts(
+          query.pageNumber,
+          query.pageSize,
+          query.sortBy,
+          query.sortDirection,
+          userId,
+          blogId,
+        );
       return foundPostsByBlogId;
     } else {
       throw new NotFoundException();
