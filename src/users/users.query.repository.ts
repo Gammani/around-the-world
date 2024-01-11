@@ -25,7 +25,9 @@ export class UsersQueryRepository {
       ? 1
       : Number(pageNumberQuery);
     const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-    const sortBy = sortByQuery ? sortByQuery : 'createdAt';
+    const sortBy = sortByQuery
+      ? `accountData.${sortByQuery}`
+      : 'accountData.createdAt';
     const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1;
 
     let totalCount;
@@ -46,32 +48,36 @@ export class UsersQueryRepository {
       })
         .sort({ [sortBy]: sortDirection })
         .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize)
-        .exec();
+        .limit(pageSize);
     } else {
       totalCount = await this.UserModel.countDocuments({});
+
       users = await this.UserModel.find({})
         .sort({ [sortBy]: sortDirection })
         .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize)
-        .exec();
+        .limit(pageSize);
     }
 
     const pagesCount = Math.ceil(totalCount / pageSize);
 
-    const userViewModels: UserViewModel[] = users.map((user) => ({
-      id: user._id.toString(),
-      login: user.accountData.login,
-      email: user.accountData.email,
-      createdAt: user.accountData.createdAt,
-    }));
+    // const userViewModels: UserViewModel[] = users.map((user) => ({
+    //   id: user._id.toString(),
+    //   login: user.accountData.login,
+    //   email: user.accountData.email,
+    //   createdAt: user.accountData.createdAt,
+    // }));
 
     return {
       pagesCount,
       page: pageNumber,
       pageSize,
       totalCount,
-      items: userViewModels,
+      items: users.map((user) => ({
+        id: user._id.toString(),
+        login: user.accountData.login,
+        email: user.accountData.email,
+        createdAt: user.accountData.createdAt,
+      })),
     };
   }
 }
