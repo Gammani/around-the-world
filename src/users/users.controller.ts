@@ -29,20 +29,20 @@ export class UsersController {
     query: {
       searchLoginTerm: string | undefined;
       searchEmailTerm: string | undefined;
-      pageNumberQuery: string | undefined;
-      pageSizeQuery: string | undefined;
-      sortByQuery: string | undefined;
-      sortDirectionQuery: string | undefined;
+      pageNumber: string | undefined;
+      pageSize: string | undefined;
+      sortBy: string | undefined;
+      sortDirection: string | undefined;
     },
   ) {
     const foundUsers: UserWithPaginationViewModel =
       await this.usersQueryRepository.findAllUsers(
         query.searchLoginTerm,
         query.searchEmailTerm,
-        query.pageNumberQuery,
-        query.pageSizeQuery,
-        query.sortByQuery,
-        query.sortDirectionQuery,
+        query.pageNumber,
+        query.pageSize,
+        query.sortBy,
+        query.sortDirection,
       );
     return foundUsers;
   }
