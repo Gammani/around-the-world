@@ -49,7 +49,12 @@ export class UsersController {
 
   @Get(':id')
   async findUserById(@Param('id') userId: string) {
-    return this.usersService.findUserById(userId);
+    const foundUser = await this.usersService.findUserById(userId);
+    if (foundUser) {
+      return await this.usersService.findUserById(userId);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   @Post()

@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserModelStaticType } from './users.schema';
 import { Model } from 'mongoose';
 import { PasswordAdapter } from '../adapter/password.adapter';
+import { PostDocument } from '../posts/posts.schema';
 
 @Injectable()
 export class UsersService {
@@ -31,7 +32,7 @@ export class UsersService {
     );
     return await this.usersRepository.createUserByAdmin(createdUser);
   }
-  async findUserById(userId: string) {
+  async findUserById(userId: string): Promise<PostDocument | null> {
     return this.usersRepository.findUserById(userId);
   }
   async removeUserByAdmin(userId: string): Promise<boolean> {

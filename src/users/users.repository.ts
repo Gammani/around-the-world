@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User, UserDocument } from './users.schema';
 import { Model } from 'mongoose';
 import { CreatedUserViewModel } from '../feature/model type/UserViewModel';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
+import { PostDocument } from '../posts/posts.schema';
 
 @Injectable()
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
-  async findUserById(userId: string) {
+  async findUserById(userId: string): Promise<PostDocument | null> {
     if (!ObjectId.isValid(userId)) {
-      return false;
-      // throw new Error('Invalid userId format');
+      throw new NotFoundException();
     }
     return this.UserModel.findById(userId);
   }
@@ -27,7 +27,7 @@ export class UsersRepository {
   }
   async deleteUser(userId: string): Promise<boolean> {
     if (!ObjectId.isValid(userId)) {
-      return false;
+      throw new NotFoundException();
       // throw new Error('Invalid userId format');
     }
     const result = await this.UserModel.deleteOne({ _id: userId });
