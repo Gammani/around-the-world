@@ -40,12 +40,38 @@ export class UsersQueryRepository {
           { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
         ],
       });
+      //   $and: [
+      //     {
+      //       $or: [
+      //         {
+      //           'accountData.login': { $regex: searchLoginTerm, $options: 'i' },
+      //         },
+      //         {
+      //           'accountData.email': { $regex: searchEmailTerm, $options: 'i' },
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // });
       users = await this.UserModel.find({
         $or: [
           { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
           { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
         ],
       })
+        //   $and: [
+        //     {
+        //       $or: [
+        //         {
+        //           'accountData.login': { $regex: searchLoginTerm, $options: 'i' },
+        //         },
+        //         {
+        //           'accountData.email': { $regex: searchEmailTerm, $options: 'i' },
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // })
         .sort({ [sortBy]: sortDirection })
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize);
