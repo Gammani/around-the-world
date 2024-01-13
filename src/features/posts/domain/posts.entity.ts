@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { LikeStatus } from '../../feature/types';
+import { LikeStatus } from '../../types';
 import { HydratedDocument, Model } from 'mongoose';
 import {
-  CreateInputPostModelType,
-  CreateInputPostWithBlogIdModelType,
-} from '../../feature/model type/PostViewModel';
+  PostCreateModel,
+  PostCreateModelWithBlogId,
+} from '../api/models/input/post.input.model';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -99,7 +99,7 @@ export class Post {
 export const PostSchema = SchemaFactory.createForClass(Post);
 
 PostSchema.statics.createPostWithUriBlogId = (
-  postInputDto: CreateInputPostModelType,
+  postInputDto: PostCreateModel,
   blogId: string,
   blogName: string,
   PostModel: Model<PostDocument> & PostModelWithUriBlogIdStaticType,
@@ -122,7 +122,7 @@ PostSchema.statics.createPostWithUriBlogId = (
 };
 
 PostSchema.statics.createPost = (
-  postInputDto: CreateInputPostWithBlogIdModelType,
+  postInputDto: PostCreateModelWithBlogId,
   blogName: string,
   PostModel: Model<PostDocument> & PostModelStaticType,
 ) => {
@@ -145,7 +145,7 @@ PostSchema.statics.createPost = (
 
 export type PostModelWithUriBlogIdStaticType = {
   createPostWithUriBlogId: (
-    postInputDto: CreateInputPostModelType,
+    postInputDto: PostCreateModel,
     blogId: string,
     blogName: string,
     PostModel: Model<PostDocument> & PostModelWithUriBlogIdStaticType,
@@ -163,7 +163,7 @@ export type PostModelWithUriBlogIdStaticType = {
 
 export type PostModelStaticType = {
   createPost: (
-    postInputDto: CreateInputPostWithBlogIdModelType,
+    postInputDto: PostCreateModelWithBlogId,
     blogName: string,
     PostModel: Model<PostDocument> & PostModelStaticType,
   ) => {

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { HydratedDocument, Model } from 'mongoose';
-import { CreateInputBlogModelType } from '../../feature/model type/BlogViewModel';
+import { BlogCreateModel } from '../api/models/input/blog.input.model';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
@@ -38,7 +38,7 @@ export class Blog {
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 BlogSchema.statics.createBlog = (
-  dto: CreateInputBlogModelType,
+  dto: BlogCreateModel,
   BlogModel: Model<BlogDocument> & BlogModelStaticType,
 ) => {
   const blog = new BlogModel();
@@ -54,7 +54,7 @@ BlogSchema.statics.createBlog = (
 
 export type BlogModelStaticType = {
   createBlog: (
-    dto: CreateInputBlogModelType,
+    dto: BlogCreateModel,
     BlogModel: Model<BlogDocument> & BlogModelStaticType,
   ) => {
     _id: ObjectId;

@@ -1,16 +1,5 @@
-import { LikeStatus } from '../types';
+import { LikeStatus } from '../../../../types';
 
-export type CreateInputPostModelType = {
-  title: string;
-  shortDescription: string;
-  content: string;
-};
-export type CreateInputPostWithBlogIdModelType = {
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-};
 export type NewestLikesViewModel = {
   addedAt: string;
   userId: string;
@@ -53,10 +42,4 @@ export type PostsWithPaginationViewModel = {
   pageSize: number;
   totalCount: number;
   items: PostViewModel[];
-};
-export type UpdateInputPostModelType = {
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
 };

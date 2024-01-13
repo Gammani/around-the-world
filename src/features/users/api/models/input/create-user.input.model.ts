@@ -1,17 +1,22 @@
 import { Trim } from '../../../../../infrastructure/decorators/transform/trim';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class UserCreateModel {
   @Trim()
+  @Matches(/^[a-zA-Z0-9_-]*$/)
   @IsString()
-  @Length(5, 20)
+  @Length(3, 10)
+  @IsNotEmpty()
   login: string;
 
   @Trim()
   @IsString()
-  @Length(5, 20)
+  @Length(6, 20)
+  @IsNotEmpty()
   password: string;
-  @IsEmail()
-  @Length(5, 20)
+
+  @Trim()
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  @IsNotEmpty()
   email: string;
 }

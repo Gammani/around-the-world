@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../domain/user.entity';
 import { Model } from 'mongoose';
-import { UserWithPaginationViewModel } from '../../../feature/model type/UserViewModel';
+import { UserWithPaginationViewModel } from '../api/models/output/user.output.model';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -83,7 +83,7 @@ export class UsersQueryRepository {
 
     const pagesCount = Math.ceil(totalCount / pageSize);
 
-    // const userViewModels: UserViewModel[] = users.map((user) => ({
+    // const userViewModels: UserOutputModel[] = users.map((user) => ({
     //   id: user._id.toString(),
     //   login: user.accountData.login,
     //   email: user.accountData.email,

@@ -10,20 +10,18 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from './blogs.query.repository';
+import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
+import { BlogsService } from '../application/blogs.service';
+import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
+import { PostsService } from '../../posts/application/posts.service';
+import { BlogDocument } from '../domain/blogs.entity';
+import { BlogWithPaginationViewModel } from './models/output/blog.output.model';
 import {
-  BlogWithPaginationViewModel,
-  CreateInputBlogModelType,
-  UpdateInputBlogModelType,
-} from '../../feature/model type/BlogViewModel';
-import { BlogsService } from './blogs.service';
-import { PostsQueryRepository } from '../posts/posts.query.repository';
-import {
-  CreateInputPostModelType,
-  PostsWithPaginationViewModel,
-} from '../../feature/model type/PostViewModel';
-import { PostsService } from '../posts/posts.service';
-import { BlogDocument } from './blogs.schema';
+  BlogCreateModel,
+  BlogUpdateModel,
+} from './models/input/blog.input.model';
+import { PostsWithPaginationViewModel } from '../../posts/api/models/output/post.output.model';
+import { PostCreateModel } from '../../posts/api/models/input/post.input.model';
 
 @Controller('blogs')
 export class BlogsController {
@@ -57,7 +55,7 @@ export class BlogsController {
   }
 
   @Post()
-  async createBlogByAdmin(@Body() inputBlogModel: CreateInputBlogModelType) {
+  async createBlogByAdmin(@Body() inputBlogModel: BlogCreateModel) {
     return this.blogService.createBlogByAdmin(inputBlogModel);
   }
 
@@ -93,7 +91,7 @@ export class BlogsController {
   @Post(':blogId/posts')
   async createPostByBlogIdByAdmin(
     @Param('blogId') blogId: string,
-    @Body() inputPostModel: CreateInputPostModelType,
+    @Body() inputPostModel: PostCreateModel,
   ) {
     const foundBlog: BlogDocument | null =
       await this.blogService.findBlogById(blogId);
@@ -117,7 +115,7 @@ export class BlogsController {
   @HttpCode(204)
   async updateBlogByAdmin(
     @Param('id') blogId: string,
-    @Body() inputBlogModel: UpdateInputBlogModelType,
+    @Body() inputBlogModel: BlogUpdateModel,
   ) {
     const foundBlog = await this.blogService.findBlogById(blogId);
     if (foundBlog) {

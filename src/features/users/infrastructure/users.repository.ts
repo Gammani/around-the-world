@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User, UserDocument } from '../domain/user.entity';
 import { Model } from 'mongoose';
-import { CreatedUserViewModel } from '../../../feature/model type/UserViewModel';
+import { CreatedUserViewModel } from '../api/models/output/user.output.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { PostDocument } from '../../posts/posts.schema';
+import { PostDocument } from '../../posts/domain/posts.entity';
 
 @Injectable()
 export class UsersRepository {

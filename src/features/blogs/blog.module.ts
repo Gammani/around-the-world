@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './blogs.schema';
-import { BlogsController } from './blogs.controller';
-import { BlogsQueryRepository } from './blogs.query.repository';
-import { BlogsService } from './blogs.service';
-import { BlogsRepository } from './blogs.repository';
-import { PostsQueryRepository } from '../posts/posts.query.repository';
-import { Post, PostSchema } from '../posts/posts.schema';
+import { Blog, BlogSchema } from './domain/blogs.entity';
+import { BlogsController } from './api/blogs.controller';
+import { BlogsQueryRepository } from './infrastructure/blogs.query.repository';
+import { BlogsService } from './application/blogs.service';
+import { BlogsRepository } from './infrastructure/blogs.repository';
+import { PostsQueryRepository } from '../posts/infrastructure/posts.query.repository';
+import { Post, PostSchema } from '../posts/domain/posts.entity';
 import { PostLike, PostLikeSchema } from '../postLike/postsLike.schema';
-import { PostsService } from '../posts/posts.service';
-import { PostsRepository } from '../posts/posts.repository';
+import { PostsService } from '../posts/application/posts.service';
+import { PostsRepository } from '../posts/infrastructure/posts.repository';
 
 @Module({
   imports: [

@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, BlogModelStaticType } from './blogs.schema';
-import { Model } from 'mongoose';
 import {
-  CreatedBlogViewModel,
-  CreateInputBlogModelType,
-  UpdateInputBlogModelType,
-} from '../../feature/model type/BlogViewModel';
-import { BlogsRepository } from './blogs.repository';
-import { PostsRepository } from '../posts/posts.repository';
+  Blog,
+  BlogDocument,
+  BlogModelStaticType,
+} from '../domain/blogs.entity';
+import { Model } from 'mongoose';
+import { BlogsRepository } from '../infrastructure/blogs.repository';
+import { PostsRepository } from '../../posts/infrastructure/posts.repository';
+import { CreatedBlogViewModel } from '../api/models/output/blog.output.model';
+import {
+  BlogCreateModel,
+  BlogUpdateModel,
+} from '../api/models/input/blog.input.model';
 
 @Injectable()
 export class BlogsService {
@@ -20,12 +24,12 @@ export class BlogsService {
     private BlogModel: Model<BlogDocument> & BlogModelStaticType,
   ) {}
 
-  async findBlogById(blogId: string) {
+  async findBlogById(blogId: string): Promise<BlogDocument | null> {
     return await this.blogsRepository.findBlogById(blogId);
   }
 
   async createBlogByAdmin(
-    inputBlogModel: CreateInputBlogModelType,
+    inputBlogModel: BlogCreateModel,
   ): Promise<CreatedBlogViewModel> {
     const createdBlog = this.BlogModel.createBlog(
       inputBlogModel,
@@ -37,7 +41,7 @@ export class BlogsService {
 
   async updateBlogByAdmin(
     blogId: string,
-    inputBlogModel: UpdateInputBlogModelType,
+    inputBlogModel: BlogUpdateModel,
   ): Promise<boolean> {
     return await this.blogsRepository.updateBlogByAdmin(blogId, inputBlogModel);
   }

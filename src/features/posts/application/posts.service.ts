@@ -1,19 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Post,
   PostDocument,
   PostModelStaticType,
   PostModelWithUriBlogIdStaticType,
-} from './posts.schema';
+} from '../domain/posts.entity';
 import { Model } from 'mongoose';
-import { PostsRepository } from './posts.repository';
+import { PostsRepository } from '../infrastructure/posts.repository';
 import {
-  CreateInputPostModelType,
-  CreateInputPostWithBlogIdModelType,
-  PostViewModel,
+  PostCreateModel,
+  PostCreateModelWithBlogId,
   UpdateInputPostModelType,
-} from '../../feature/model type/PostViewModel';
+} from '../api/models/input/post.input.model';
+import { PostViewModel } from '../api/models/output/post.output.model';
 
 @Injectable()
 export class PostsService {
@@ -30,7 +30,7 @@ export class PostsService {
   }
 
   async createPostByAdminWithBlogId(
-    createInputPostModel: CreateInputPostModelType,
+    createInputPostModel: PostCreateModel,
     blogId: string,
     blogName: string,
   ): Promise<PostViewModel> {
@@ -45,7 +45,7 @@ export class PostsService {
   }
 
   async createPostByAdmin(
-    createInputPostModel: CreateInputPostWithBlogIdModelType,
+    createInputPostModel: PostCreateModelWithBlogId,
     blogName: string,
   ): Promise<PostViewModel> {
     const createdPost = this.PostModel.createPost(

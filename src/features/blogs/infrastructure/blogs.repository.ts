@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Blog, BlogDocument, BlogModelStaticType } from './blogs.schema';
+import {
+  Blog,
+  BlogDocument,
+  BlogModelStaticType,
+} from '../domain/blogs.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  CreatedBlogViewModel,
-  UpdateInputBlogModelType,
-} from '../../feature/model type/BlogViewModel';
 import { ObjectId } from 'mongodb';
+import { CreatedBlogViewModel } from '../api/models/output/blog.output.model';
+import { BlogUpdateModel } from '../api/models/input/blog.input.model';
 
 @Injectable()
 export class BlogsRepository {
@@ -36,7 +38,7 @@ export class BlogsRepository {
 
   async updateBlogByAdmin(
     blogId: string,
-    inputBlogModel: UpdateInputBlogModelType,
+    inputBlogModel: BlogUpdateModel,
   ): Promise<boolean> {
     const result = await this.BlogModel.updateOne(
       { _id: blogId },

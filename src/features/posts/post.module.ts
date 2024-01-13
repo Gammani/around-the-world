@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Post, PostSchema } from './posts.schema';
+import { Post, PostSchema } from './domain/posts.entity';
 import { PostLike, PostLikeSchema } from '../postLike/postsLike.schema';
-import { PostsService } from './posts.service';
-import { PostsRepository } from './posts.repository';
-import { PostsController } from './posts.controller';
-import { BlogsService } from '../blogs/blogs.service';
-import { BlogsRepository } from '../blogs/blogs.repository';
-import { Blog, BlogSchema } from '../blogs/blogs.schema';
+import { PostsService } from './application/posts.service';
+import { PostsRepository } from './infrastructure/posts.repository';
+import { PostsController } from './api/posts.controller';
+import { BlogsService } from '../blogs/application/blogs.service';
+import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
+import { Blog, BlogSchema } from '../blogs/domain/blogs.entity';
 import {
   CommentLike,
-  CommentLikeSchema,
-} from '../commentLike/commentLike.schema';
-import { CommentsQueryRepository } from '../comments/comments.query.repository';
-import { Comment, CommentSchema } from '../comments/comments.schema';
-import { PostsQueryRepository } from './posts.query.repository';
+  CommentLikeEntity,
+} from '../commentLike/domain/commentLike.entity';
+import { CommentsQueryRepository } from '../comments/infrastructure/comments.query.repository';
+import { Comment, CommentSchema } from '../comments/domain/comments.entity';
+import { PostsQueryRepository } from './infrastructure/posts.query.repository';
+import { BlogIdIsExistConstraint } from '../../infrastructure/decorators/validate/blogId.isExist.decorator';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { PostsQueryRepository } from './posts.query.repository';
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: PostLike.name, schema: PostLikeSchema },
-      { name: CommentLike.name, schema: CommentLikeSchema },
+      { name: CommentLike.name, schema: CommentLikeEntity },
     ]),
   ],
   controllers: [PostsController],
@@ -34,6 +35,7 @@ import { PostsQueryRepository } from './posts.query.repository';
     PostsRepository,
     PostsQueryRepository,
     CommentsQueryRepository,
+    BlogIdIsExistConstraint,
   ],
 })
 export class PostModule {}

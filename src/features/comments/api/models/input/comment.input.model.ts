@@ -1,8 +1,14 @@
-import { LikesInfoType } from '../types';
+import { LikeStatus } from '../../../../types';
 
 type CommentatorInfoType = {
   userId: string;
   userLogin: string;
+};
+
+export type LikesInfoType = {
+  likesCount: number;
+  dislikesCount: number;
+  myStatus: LikeStatus;
 };
 
 export type CommentViewModel = {

@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errorsMessages: [],
       };
 
-      const responseBody: any | never = exception.getResponse();
+      const responseBody: any = exception.getResponse();
 
       if (Array.isArray(responseBody.message)) {
         responseBody.message.forEach((e) =>

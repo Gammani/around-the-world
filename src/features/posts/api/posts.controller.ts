@@ -10,18 +10,18 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
+import { PostsService } from '../application/posts.service';
+import { BlogsService } from '../../blogs/application/blogs.service';
+import { BlogDocument } from '../../blogs/domain/blogs.entity';
+import { PostDocument } from '../domain/posts.entity';
+import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query.repository';
+import { PostsQueryRepository } from '../infrastructure/posts.query.repository';
+import { PostsWithPaginationViewModel } from './models/output/post.output.model';
 import {
-  CreateInputPostWithBlogIdModelType,
-  PostsWithPaginationViewModel,
+  PostCreateModelWithBlogId,
   UpdateInputPostModelType,
-} from '../../feature/model type/PostViewModel';
-import { BlogsService } from '../blogs/blogs.service';
-import { BlogDocument } from '../blogs/blogs.schema';
-import { PostDocument } from './posts.schema';
-import { CommentsWithPaginationViewModel } from '../../feature/model type/CommentViewModel';
-import { CommentsQueryRepository } from '../comments/comments.query.repository';
-import { PostsQueryRepository } from './posts.query.repository';
+} from './models/input/post.input.model';
+import { CommentsWithPaginationViewModel } from '../../comments/api/models/input/comment.input.model';
 
 @Controller('posts')
 export class PostsController {
@@ -81,9 +81,7 @@ export class PostsController {
   }
 
   @Post()
-  async createPostByAdmin(
-    @Body() inputPostModel: CreateInputPostWithBlogIdModelType,
-  ) {
+  async createPostByAdmin(@Body() inputPostModel: PostCreateModelWithBlogId) {
     const foundBlog: BlogDocument | null = await this.blogService.findBlogById(
       inputPostModel.blogId,
     );

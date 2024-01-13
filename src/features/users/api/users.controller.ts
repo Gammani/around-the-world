@@ -4,12 +4,13 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
   Query,
 } from '@nestjs/common';
-import { UserWithPaginationViewModel } from '../../../feature/model type/UserViewModel';
+import { UserWithPaginationViewModel } from './models/output/user.output.model';
 import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 import { UsersService } from '../application/users.service';
 import { UserCreateModel } from './models/input/create-user.input.model';
@@ -56,6 +57,7 @@ export class UsersController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async createUserByAdmin(@Body() inputUserModel: UserCreateModel) {
     return this.usersService.createUserByAdmin(inputUserModel);
   }

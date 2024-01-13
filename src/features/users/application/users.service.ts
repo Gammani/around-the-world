@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreatedUserViewModel } from '../../../feature/model type/UserViewModel';
+import { CreatedUserViewModel } from '../api/models/output/user.output.model';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserModelStaticType } from '../domain/user.entity';
 import { Model } from 'mongoose';
 import { PasswordAdapter } from '../../adapter/password.adapter';
-import { PostDocument } from '../../posts/posts.schema';
+import { PostDocument } from '../../posts/domain/posts.entity';
 import { UserCreateModel } from '../api/models/input/create-user.input.model';
 
 @Injectable()

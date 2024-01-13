@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument } from './posts.schema';
+import { Post, PostDocument } from '../domain/posts.entity';
 import { Model } from 'mongoose';
-import { LikeStatus } from '../../feature/types';
-import { PostLike, PostLikeDocument } from '../postLike/postsLike.schema';
+import { LikeStatus } from '../../types';
+import { PostLike, PostLikeDocument } from '../../postLike/postsLike.schema';
+import { ObjectId } from 'mongodb';
 import {
   customFilteredPostLikesType,
   PostsWithPaginationViewModel,
   PostViewModel,
-} from '../../feature/model type/PostViewModel';
-import { ObjectId } from 'mongodb';
+} from '../api/models/output/post.output.model';
 
 @Injectable()
 export class PostsQueryRepository {

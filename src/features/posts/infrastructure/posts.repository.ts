@@ -4,14 +4,12 @@ import {
   Post,
   PostDocument,
   PostModelWithUriBlogIdStaticType,
-} from './posts.schema';
+} from '../domain/posts.entity';
 import { Model } from 'mongoose';
-import {
-  PostViewModel,
-  UpdateInputPostModelType,
-} from '../../feature/model type/PostViewModel';
-import { LikeStatus } from '../../feature/types';
+import { LikeStatus } from '../../types';
 import { ObjectId } from 'mongodb';
+import { PostViewModel } from '../api/models/output/post.output.model';
+import { UpdateInputPostModelType } from '../api/models/input/post.input.model';
 
 @Injectable()
 export class PostsRepository {

@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from './blogs.schema';
+import { Blog, BlogDocument } from '../domain/blogs.entity';
 import { Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
 import {
   BlogViewModel,
   BlogWithPaginationViewModel,
-} from '../../feature/model type/BlogViewModel';
-import { ObjectId } from 'mongodb';
+} from '../api/models/output/blog.output.model';
 
 @Injectable()
 export class BlogsQueryRepository {

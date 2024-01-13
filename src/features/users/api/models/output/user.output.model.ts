@@ -1,4 +1,4 @@
-export type UserViewModel = {
+export type UserOutputModel = {
   id: string;
   login: string;
   email: string;
@@ -15,5 +15,5 @@ export type UserWithPaginationViewModel = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: UserViewModel[];
+  items: UserOutputModel[];
 };
