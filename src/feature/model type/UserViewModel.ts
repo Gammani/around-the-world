@@ -4,11 +4,6 @@ export type UserViewModel = {
   email: string;
   createdAt: string;
 };
-export type CreateInputUserModelType = {
-  login: string;
-  password: string;
-  email: string;
-};
 export type CreatedUserViewModel = {
   id: string;
   login: string;

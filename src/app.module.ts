@@ -3,10 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { RemoveAllModule } from './testing.removeAll/removeAll.module';
-import { BlogModule } from './blogs/blog.module';
-import { PostModule } from './posts/post.module';
+import { UsersModule } from './features/users/users.module';
+import { RemoveAllModule } from './features/testing.removeAll/removeAll.module';
+import { BlogModule } from './features/blogs/blog.module';
+import { PostModule } from './features/posts/post.module';
 
 @Module({
   imports: [
