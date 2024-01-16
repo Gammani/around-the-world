@@ -1,3 +1,4 @@
+import { configModule } from './settings/configuration/configModule';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,6 +15,7 @@ import { PostModule } from './features/posts/post.module';
     MongooseModule.forRoot(process.env.MONGO_URL || 'mongodb://0.0.0.0:27017', {
       dbName: 'around-the-world',
     }),
+    configModule,
     RemoveAllModule,
     UsersModule,
     BlogModule,
