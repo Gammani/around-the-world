@@ -4,17 +4,36 @@ import { Model } from 'mongoose';
 import { CreatedUserViewModel } from '../api/models/output/user.output.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { PostDocument } from '../../posts/domain/posts.entity';
 
 @Injectable()
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
-  async findUserById(userId: string): Promise<PostDocument | null> {
+  async findUserById(userId: string): Promise<UserDocument | null> {
     if (!ObjectId.isValid(userId)) {
       throw new NotFoundException();
     }
     return this.UserModel.findById(userId);
+  }
+  async findUserByLogin(login: string): Promise<UserDocument | null> {
+    const foundUser = await this.UserModel.findOne({
+      'accountData.login': login,
+    });
+    if (foundUser) {
+      return foundUser;
+    } else {
+      return null;
+    }
+  }
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
+    const foundUser = await this.UserModel.findOne({
+      'accountData.email': email,
+    });
+    if (foundUser) {
+      return foundUser;
+    } else {
+      return null;
+    }
   }
   async createUserByAdmin(createdUserDto: any): Promise<CreatedUserViewModel> {
     const newUser = await createdUserDto.save();
@@ -24,6 +43,18 @@ export class UsersRepository {
       email: newUser.accountData.email,
       createdAt: newUser.accountData.createdAt,
     };
+  }
+  async loginIsExist(login: string): Promise<boolean> {
+    const foundUser = await this.UserModel.findOne({
+      'accountData.login': login,
+    });
+    return !foundUser;
+  }
+  async emailIsExist(email: string): Promise<boolean> {
+    const foundUser = await this.UserModel.findOne({
+      'accountData.email': email,
+    });
+    return !foundUser;
   }
   async deleteUser(userId: string): Promise<boolean> {
     if (!ObjectId.isValid(userId)) {

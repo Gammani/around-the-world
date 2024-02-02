@@ -8,6 +8,7 @@ import { UsersModule } from './features/users/users.module';
 import { RemoveAllModule } from './features/testing.removeAll/removeAll.module';
 import { BlogModule } from './features/blogs/blog.module';
 import { PostModule } from './features/posts/post.module';
+import { AuthModule } from './features/auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PostModule } from './features/posts/post.module';
       dbName: 'around-the-world',
     }),
     configModule,
+    AuthModule,
     RemoveAllModule,
     UsersModule,
     BlogModule,

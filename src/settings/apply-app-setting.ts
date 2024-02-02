@@ -6,6 +6,7 @@ import {
 import { HttpExceptionFilter } from '../infrastructure/exception-filters/http-exception-filter';
 import { useContainer } from 'class-validator';
 import { AppModule } from '../app.module';
+import cookieParser from 'cookie-parser';
 
 // Используем данную функцию в main.ts и в e2e тестах
 export const applyAppSettings = (app: INestApplication) => {
@@ -18,6 +19,7 @@ export const applyAppSettings = (app: INestApplication) => {
   setAppExceptionsFilters(app);
 
   app.enableCors();
+  app.use(cookieParser());
 };
 
 const setAppPipes = (app: INestApplication) => {
