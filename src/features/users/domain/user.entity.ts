@@ -80,6 +80,8 @@ UserSchema.statics.createUser = (
   dto: UserCreateModel,
   passwordHash: string,
   UserModel: Model<UserDocument> & UserModelStaticType,
+  isConfirmed: boolean,
+  confirmationCode?: string,
 ) => {
   const user = new UserModel();
 
@@ -93,12 +95,12 @@ UserSchema.statics.createUser = (
   };
 
   user.emailConfirmation = {
-    confirmationCode: uuidv4(),
+    confirmationCode: confirmationCode ? confirmationCode : uuidv4(),
     expirationDate: add(new Date(), {
       hours: 1,
       minutes: 3,
     }),
-    isConfirmed: true,
+    isConfirmed: isConfirmed,
   };
 
   return user;
@@ -109,6 +111,8 @@ export type UserModelStaticType = {
     dto: UserCreateModel,
     passwordHash: string,
     UserModel: Model<UserDocument> & UserModelStaticType,
+    isConfirmed: boolean,
+    confirmationCode?: string,
   ) => {
     _id: ObjectId;
     accountData: {

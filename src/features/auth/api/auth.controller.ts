@@ -10,14 +10,14 @@ import {
 import { UserCreateModel } from '../../users/api/models/input/create-user.input.model';
 import { ThrottlerGuard } from '@nestjs/throttler';
 
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(ThrottlerGuard)
   @Post('registration')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() createUserModel: UserCreateModel) {
-    return createUserModel;
+    await this.usersService.createUser(createUserModel);
   }
 }

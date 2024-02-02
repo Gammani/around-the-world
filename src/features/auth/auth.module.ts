@@ -8,6 +8,7 @@ import { User, UserSchema } from '../users/domain/user.entity';
 import { LoginIsExistConstraint } from '../../infrastructure/decorators/validate/login.isExist.decorator';
 import { EmailIsExistConstraint } from '../../infrastructure/decorators/validate/email.isExist.decorator';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { EmailManager } from '../adapter/email.manager';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     UsersService,
     UsersRepository,
     PasswordAdapter,
+    EmailManager,
     LoginIsExistConstraint,
     EmailIsExistConstraint,
   ],

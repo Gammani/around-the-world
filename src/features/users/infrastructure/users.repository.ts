@@ -35,7 +35,7 @@ export class UsersRepository {
       return null;
     }
   }
-  async createUserByAdmin(createdUserDto: any): Promise<CreatedUserViewModel> {
+  async createUser(createdUserDto: any): Promise<CreatedUserViewModel> {
     const newUser = await createdUserDto.save();
     return {
       id: newUser._id.toString(),

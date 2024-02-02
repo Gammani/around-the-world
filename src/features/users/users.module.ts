@@ -6,6 +6,7 @@ import { UsersService } from './application/users.service';
 import { UsersRepository } from './infrastructure/users.repository';
 import { UsersQueryRepository } from './infrastructure/users.query.repository';
 import { PasswordAdapter } from '../adapter/password.adapter';
+import { EmailManager } from '../adapter/email.manager';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PasswordAdapter } from '../adapter/password.adapter';
     UsersRepository,
     UsersQueryRepository,
     PasswordAdapter,
+    EmailManager,
   ],
 })
 export class UsersModule {}
