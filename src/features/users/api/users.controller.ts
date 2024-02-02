@@ -9,22 +9,18 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { UserWithPaginationViewModel } from './models/output/user.output.model';
 import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 import { UsersService } from '../application/users.service';
 import { UserCreateModel } from './models/input/create-user.input.model';
-import { AuthGuard } from '../../../infrastructure/guards/auth.guard';
 
-@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
-  @UseGuards(AuthGuard)
   @Get()
   async getAllUsers(
     @Query()
