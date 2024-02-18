@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CreatedUserViewModel } from '../api/models/output/user.output.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
+import { UserDbType } from '../../types';
 
 @Injectable()
 export class UsersRepository {
@@ -26,14 +27,26 @@ export class UsersRepository {
     }
   }
   async findUserByEmail(email: string): Promise<UserDocument | null> {
-    const foundUser = await this.UserModel.findOne({
+    return this.UserModel.findOne({
       'accountData.email': email,
     });
-    if (foundUser) {
-      return foundUser;
-    } else {
-      return null;
-    }
+  }
+  async findUserByConfirmationCode(
+    confirmationCode: string,
+  ): Promise<UserDocument | null> {
+    return this.UserModel.findOne({
+      'emailConfirmation.confirmationCode': confirmationCode,
+    });
+  }
+  async findUserByLoginOrEmail(
+    loginOrEmail: string,
+  ): Promise<UserDbType | null> {
+    return this.UserModel.findOne({
+      $or: [
+        { 'accountData.email': loginOrEmail },
+        { 'accountData.login': loginOrEmail },
+      ],
+    });
   }
   async createUser(createdUserDto: any): Promise<CreatedUserViewModel> {
     const newUser = await createdUserDto.save();
@@ -55,6 +68,13 @@ export class UsersRepository {
       'accountData.email': email,
     });
     return !foundUser;
+  }
+  async updateConfirmation(_id: string): Promise<boolean> {
+    const result = await this.UserModel.updateOne(
+      { _id },
+      { $set: { 'emailConfirmation.isConfirmed': true } },
+    );
+    return result.modifiedCount === 1;
   }
   async deleteUser(userId: string): Promise<boolean> {
     if (!ObjectId.isValid(userId)) {

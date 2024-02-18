@@ -9,10 +9,20 @@ import { LoginIsExistConstraint } from '../../infrastructure/decorators/validate
 import { EmailIsExistConstraint } from '../../infrastructure/decorators/validate/email.isExist.decorator';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailManager } from '../adapter/email.manager';
+import { AuthService } from './application/auth.service';
+import { EmailCodeIsConfirmConstraint } from '../../infrastructure/decorators/validate/email-code-is-confirm-constraint.service';
+import { SecurityDevicesService } from '../devices/application/security-devices.service';
+import { Device, DeviceSchema } from '../devices/domain/devices.entity';
+import { DeviceRepository } from '../devices/infrastructure/device.repository';
+import { JwtService } from './application/jwt.service';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Device.name, schema: DeviceSchema },
+    ]),
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
@@ -22,12 +32,18 @@ import { EmailManager } from '../adapter/email.manager';
   ],
   controllers: [AuthController],
   providers: [
+    AuthService,
     UsersService,
     UsersRepository,
     PasswordAdapter,
     EmailManager,
     LoginIsExistConstraint,
+    EmailCodeIsConfirmConstraint,
     EmailIsExistConstraint,
+    DeviceRepository,
+    SecurityDevicesService,
+    JwtService,
+    LocalStrategy,
   ],
 })
 export class AuthModule {}

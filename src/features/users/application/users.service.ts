@@ -8,6 +8,7 @@ import { PasswordAdapter } from '../../adapter/password.adapter';
 import { UserCreateModel } from '../api/models/input/create-user.input.model';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailManager } from '../../adapter/email.manager';
+import { UserDbType } from '../../types';
 
 @Injectable()
 export class UsersService {
@@ -67,6 +68,26 @@ export class UsersService {
   }
   async loginIsExist(login: string): Promise<boolean> {
     return await this.usersRepository.loginIsExist(login);
+  }
+  async checkCredentials(
+    loginOrEmail: string,
+    password: string,
+  ): Promise<UserDbType | null> {
+    const user: UserDbType | null =
+      await this.usersRepository.findUserByLoginOrEmail(loginOrEmail);
+
+    if (!user) return null;
+    if (!user.emailConfirmation.isConfirmed) return null;
+
+    const isHashesEquals: any = await this.passwordAdapter.isPasswordCorrect(
+      password,
+      user.accountData.passwordHash,
+    );
+    if (isHashesEquals) {
+      return user;
+    } else {
+      return null;
+    }
   }
   async emailIsExist(email: string): Promise<boolean> {
     return await this.usersRepository.emailIsExist(email);

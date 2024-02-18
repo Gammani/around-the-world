@@ -7,7 +7,11 @@ export class PasswordAdapter {
     const passwordSalt = await bcrypt.genSalt(10);
     return await this._generateHash(password, passwordSalt);
   }
-  async _generateHash(password: string, salt: string) {
-    return await bcrypt.hash(password, salt);
+  private _generateHash(password: string, salt: string) {
+    return bcrypt.hash(password, salt);
+  }
+  async isPasswordCorrect(password: string, hash: string) {
+    const isEqual = await bcrypt.compare(password, hash);
+    return isEqual;
   }
 }
