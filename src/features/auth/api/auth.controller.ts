@@ -24,6 +24,7 @@ import {
 import { SecurityDevicesService } from '../../devices/application/security-devices.service';
 import { JwtService } from '../application/jwt.service';
 import { DeviceDbType } from '../../types';
+import { EmailInputModel } from './models/input/email.input.model';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -46,6 +47,10 @@ export class AuthController {
   async registrationConfirmation(@Body() confirmCodeModel: ConfirmCodeModel) {
     await this.authService.confirmEmail(confirmCodeModel.code);
   }
+
+  @Post('password-recovery')
+  @HttpCode(204)
+  async passwordRecovery(@Body() emailInputModel: EmailInputModel) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')

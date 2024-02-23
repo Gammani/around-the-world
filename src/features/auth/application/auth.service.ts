@@ -2,7 +2,6 @@ import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../../users/application/users.service';
 import { ObjectId } from 'mongodb';
-import { UserDocument } from '../../users/domain/user.entity';
 import { UserDbType } from '../../types';
 
 @Injectable()

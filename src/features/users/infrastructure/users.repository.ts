@@ -76,6 +76,13 @@ export class UsersRepository {
     );
     return result.modifiedCount === 1;
   }
+  async updateRecoveryCode(email: string, recoveryCode: string) {
+    const result = await this.UserModel.updateOne(
+      { 'accountData.email': email },
+      { $set: { 'accountData.recoveryCode': recoveryCode } },
+    );
+    return result.modifiedCount === 1;
+  }
   async deleteUser(userId: string): Promise<boolean> {
     if (!ObjectId.isValid(userId)) {
       throw new NotFoundException();
