@@ -2,27 +2,34 @@ import jwt, { Secret } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { PasswordAdapter } from '../../adapter/password.adapter';
 
 @Injectable()
 export class JwtService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private passwordAdapter: PasswordAdapter,
+  ) {}
 
-  async createAccessJWT(deviseId: ObjectId) {
+  async createAccessJWT(deviceId: ObjectId) {
     return jwt.sign(
-      { deviseId },
+      { deviceId },
       this.configService.get('JWT_ACCESS_SECRET') as Secret,
       {
         expiresIn: '600000',
       },
     );
   }
-  async createRefreshJWT(deviseId: ObjectId) {
+  async createRefreshJWT(deviceId: ObjectId) {
     return jwt.sign(
-      { deviseId },
+      { deviceId },
       this.configService.get('JWT_REFRESH_SECRET') as Secret,
       {
         expiresIn: '1200000',
       },
     );
+  }
+  async verifyRefreshToken(refreshToken: string) {
+    return await this.passwordAdapter.jwtVerify(refreshToken);
   }
 }

@@ -10,14 +10,14 @@ import { UserDbType } from '../../types';
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
-  async findUserById(userId: string): Promise<UserDocument | null> {
+  async findUserById(userId: string): Promise<UserDbType | null> {
     if (!ObjectId.isValid(userId)) {
       throw new NotFoundException();
     }
     return this.UserModel.findById(userId);
   }
-  async findUserByLogin(login: string): Promise<UserDocument | null> {
-    const foundUser = await this.UserModel.findOne({
+  async findUserByLogin(login: string): Promise<UserDbType | null> {
+    const foundUser: UserDbType | null = await this.UserModel.findOne({
       'accountData.login': login,
     });
     if (foundUser) {
@@ -26,14 +26,15 @@ export class UsersRepository {
       return null;
     }
   }
-  async findUserByEmail(email: string): Promise<UserDocument | null> {
+  async findUserByEmail(email: string): Promise<UserDbType | null> {
     return this.UserModel.findOne({
       'accountData.email': email,
     });
   }
   async findUserByConfirmationCode(
     confirmationCode: string,
-  ): Promise<UserDocument | null> {
+  ): Promise<UserDbType | null> {
+    debugger;
     return this.UserModel.findOne({
       'emailConfirmation.confirmationCode': confirmationCode,
     });
@@ -46,6 +47,13 @@ export class UsersRepository {
         { 'accountData.email': loginOrEmail },
         { 'accountData.login': loginOrEmail },
       ],
+    });
+  }
+  async findUserByRecoveryCode(
+    recoveryCode: string,
+  ): Promise<UserDbType | null> {
+    return this.UserModel.findOne({
+      'accountData.recoveryCode': recoveryCode,
     });
   }
   async createUser(createdUserDto: any): Promise<CreatedUserViewModel> {
@@ -69,12 +77,26 @@ export class UsersRepository {
     });
     return !foundUser;
   }
-  async updateConfirmation(_id: string): Promise<boolean> {
+  async updateConfirmationStatus(_id: string): Promise<boolean> {
+    debugger;
     const result = await this.UserModel.updateOne(
       { _id },
       { $set: { 'emailConfirmation.isConfirmed': true } },
     );
     return result.modifiedCount === 1;
+  }
+  async updateConfirmationCode(email: string, code: string): Promise<boolean> {
+    const result = await this.UserModel.updateOne(
+      { 'accountData.email': email },
+      { $set: { 'emailConfirmation.confirmationCode': code } },
+    );
+    return result.modifiedCount === 1;
+  }
+  async updatePassword(passwordHash: string, recoveryCode: string) {
+    return this.UserModel.updateOne(
+      { 'accountData.recoveryCode': recoveryCode },
+      { $set: { 'accountData.passwordHash': passwordHash } },
+    );
   }
   async updateRecoveryCode(email: string, recoveryCode: string) {
     const result = await this.UserModel.updateOne(

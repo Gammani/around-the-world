@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../domain/user.entity';
 import { Model } from 'mongoose';
-import { UserWithPaginationViewModel } from '../api/models/output/user.output.model';
+import {
+  UserViewModel,
+  UserWithPaginationViewModel,
+} from '../api/models/output/user.output.model';
+import { ObjectId } from 'mongodb';
+import { UserDbType } from '../../types';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -102,5 +107,19 @@ export class UsersQueryRepository {
         createdAt: user.accountData.createdAt,
       })),
     };
+  }
+  async findUserById(userId: ObjectId): Promise<UserViewModel | null> {
+    const foundUser: UserDbType | null = await this.UserModel.findOne({
+      _id: userId,
+    });
+    if (foundUser) {
+      return {
+        email: foundUser.accountData.email,
+        login: foundUser.accountData.login,
+        userId: foundUser._id.toString(),
+      };
+    } else {
+      return null;
+    }
   }
 }

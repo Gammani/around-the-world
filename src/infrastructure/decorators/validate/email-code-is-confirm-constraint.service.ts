@@ -30,6 +30,7 @@ export class EmailCodeIsConfirmConstraint
 {
   constructor(private readonly authService: AuthService) {}
   async validate(code: string) {
+    debugger;
     return await this.authService.isConfirmEmailCode(code);
   }
 

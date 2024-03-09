@@ -17,3 +17,8 @@ export type UserWithPaginationViewModel = {
   totalCount: number;
   items: UserOutputModel[];
 };
+export type UserViewModel = {
+  email: string;
+  login: string;
+  userId: string;
+};

@@ -9,6 +9,7 @@ import { RemoveAllModule } from './features/testing.removeAll/removeAll.module';
 import { BlogModule } from './features/blogs/blog.module';
 import { PostModule } from './features/posts/post.module';
 import { AuthModule } from './features/auth/auth.module';
+import { ExpiredTokenModule } from './features/expiredToken/expired.token.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from './features/auth/auth.module';
     UsersModule,
     BlogModule,
     PostModule,
+    ExpiredTokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

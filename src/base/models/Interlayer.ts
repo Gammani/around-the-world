@@ -32,3 +32,7 @@ export class InterlayerNoticeExtension {
     this.key = key;
   }
 }
+
+export enum CreateErrors {
+  NotFound = 1,
+}

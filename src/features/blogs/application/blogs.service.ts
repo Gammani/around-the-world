@@ -43,6 +43,7 @@ export class BlogsService {
     blogId: string,
     inputBlogModel: BlogUpdateModel,
   ): Promise<boolean> {
+    // логика
     return await this.blogsRepository.updateBlogByAdmin(blogId, inputBlogModel);
   }
 

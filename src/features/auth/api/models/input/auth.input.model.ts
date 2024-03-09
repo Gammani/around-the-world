@@ -17,3 +17,8 @@ export class AuthInputModel {
 export interface RequestWithUser extends Request {
   user: ObjectId; // предположим, что user имеет тип ObjectId
 }
+
+export interface RequestWithDeviceId extends Request {
+  deviceId: ObjectId;
+  cookies?: string;
+}

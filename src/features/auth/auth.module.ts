@@ -16,12 +16,20 @@ import { Device, DeviceSchema } from '../devices/domain/devices.entity';
 import { DeviceRepository } from '../devices/infrastructure/device.repository';
 import { JwtService } from './application/jwt.service';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
+import {
+  ExpiredToken,
+  ExpiredTokenSchema,
+} from '../expiredToken/domain/expired-token.entity';
+import { UsersQueryRepository } from '../users/infrastructure/users.query.repository';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Device.name, schema: DeviceSchema },
+      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
     ThrottlerModule.forRoot([
       {
@@ -35,6 +43,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     AuthService,
     UsersService,
     UsersRepository,
+    UsersQueryRepository,
     PasswordAdapter,
     EmailManager,
     LoginIsExistConstraint,
@@ -44,6 +53,9 @@ import { LocalStrategy } from './strategies/local.strategy';
     SecurityDevicesService,
     JwtService,
     LocalStrategy,
+    JwtStrategy,
+    EmailManager,
+    ExpiredTokenRepository,
   ],
 })
 export class AuthModule {}

@@ -2,6 +2,7 @@ import { UsersService } from '../../users/application/users.service';
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -19,12 +20,16 @@ import { ConfirmCodeModel } from './models/input/confirm.code.model';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import {
   AuthInputModel,
+  RequestWithDeviceId,
   RequestWithUser,
 } from './models/input/auth.input.model';
 import { SecurityDevicesService } from '../../devices/application/security-devices.service';
 import { JwtService } from '../application/jwt.service';
 import { DeviceDbType } from '../../types';
 import { EmailInputModel } from './models/input/email.input.model';
+import { NewPasswordModel } from './models/input/new.password.model';
+import { CheckRefreshToken } from '../guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -50,7 +55,23 @@ export class AuthController {
 
   @Post('password-recovery')
   @HttpCode(204)
-  async passwordRecovery(@Body() emailInputModel: EmailInputModel) {}
+  async passwordRecovery(@Body() emailInputModel: EmailInputModel) {
+    await this.authService.passwordRecovery(emailInputModel.email);
+  }
+
+  @Post('new-password')
+  @HttpCode(204)
+  async newPassword(@Body() newPasswordModel: NewPasswordModel) {
+    const foundUser = await this.usersService.findUserByRecoveryCode(
+      newPasswordModel.recoveryCode,
+    );
+    if (foundUser) {
+      await this.usersService.updatePassword(
+        newPasswordModel.newPassword,
+        newPasswordModel.recoveryCode,
+      );
+    }
+  }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -69,8 +90,54 @@ export class AuthController {
     );
     const accessToken = await this.jwtService.createAccessJWT(device._id);
     const refreshToken = await this.jwtService.createRefreshJWT(device._id);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: false,
+      secure: false,
+    });
     return accessToken;
+  }
+
+  @UseGuards(CheckRefreshToken)
+  @Post('refresh-token')
+  async refreshToken(
+    @Req() req: Request & RequestWithDeviceId,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    debugger;
+    await this.securityDevicesService.addExpiredRefreshToken(
+      req.deviceId,
+      req.cookies.refreshToken,
+    );
+
+    const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
+    const refreshToken = await this.jwtService.createRefreshJWT(req.deviceId);
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: false,
+      secure: false,
+    });
+    return accessToken;
+  }
+
+  @Post('registration-email-resending')
+  @HttpCode(204)
+  async registrationEmailResending(@Body() emailInputModel: EmailInputModel) {
+    await this.authService.resendCode(emailInputModel.email);
+  }
+
+  @UseGuards(CheckRefreshToken)
+  @Post('logout')
+  @HttpCode(204)
+  async logout(
+    @Req() req: Request & RequestWithDeviceId,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.securityDevicesService.deleteCurrentSessionById(req.deviceId);
+    res.cookie('refreshToken', '', { httpOnly: false, secure: false });
+  }
+
+  @UseGuards(CheckRefreshToken)
+  @Get('me')
+  async me(@Req() req: Request & RequestWithDeviceId) {
+    return await this.usersService.findUserByDeviceId(req.deviceId);
   }
 }

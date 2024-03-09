@@ -30,3 +30,8 @@ export type DeviceDbType = {
   deviceName: string;
   lastActiveDate: string;
 };
+export type TokenPayloadType = {
+  deviceId: ObjectId;
+  iat?: string;
+  exp?: string;
+};
