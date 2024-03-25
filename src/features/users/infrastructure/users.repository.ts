@@ -10,7 +10,7 @@ import { UserDbType } from '../../types';
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
-  async findUserById(userId: string): Promise<UserDbType | null> {
+  async findUserById(userId: string | ObjectId): Promise<UserDbType | null> {
     if (!ObjectId.isValid(userId)) {
       throw new NotFoundException();
     }

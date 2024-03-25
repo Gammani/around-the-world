@@ -13,6 +13,7 @@ import {
   BlogCreateModel,
   BlogUpdateModel,
 } from '../api/models/input/blog.input.model';
+import { BlogDbType } from '../../types';
 
 @Injectable()
 export class BlogsService {
@@ -24,7 +25,7 @@ export class BlogsService {
     private BlogModel: Model<BlogDocument> & BlogModelStaticType,
   ) {}
 
-  async findBlogById(blogId: string): Promise<BlogDocument | null> {
+  async findBlogById(blogId: string): Promise<BlogDbType | null> {
     return await this.blogsRepository.findBlogById(blogId);
   }
 

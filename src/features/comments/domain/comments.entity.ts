@@ -1,7 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { LikeStatus } from '../../types';
-import { HydratedDocument } from 'mongoose';
+import {
+  CommentatorInfoType,
+  CommentatorLikesInfoType,
+  LikeStatus,
+  PostDbType,
+  UserDbType,
+} from '../../types';
+import { HydratedDocument, Model } from 'mongoose';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
@@ -79,3 +85,45 @@ export class Comment {
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+CommentSchema.statics.createComment = (
+  content: string,
+  user: UserDbType,
+  post: PostDbType,
+  CommentModel: Model<CommentDocument> & CommentModelStaticType,
+) => {
+  const comment = new CommentModel();
+  comment._id = new ObjectId();
+  comment.content = content;
+  comment.commentatorInfo = {
+    userId: user._id,
+    userLogin: user.accountData.login,
+  };
+  comment.createdAt = new Date().toISOString();
+  comment._postId = post._id;
+  comment._blogId = post.blogId;
+  comment.likesInfo = {
+    likesCount: 0,
+    dislikesCount: 0,
+    myStatus: LikeStatus.None,
+  };
+
+  return comment;
+};
+
+export type CommentModelStaticType = {
+  createComment: (
+    content: string,
+    user: UserDbType,
+    post: PostDbType,
+    CommentModel: Model<CommentDocument> & CommentModelStaticType,
+  ) => {
+    _id: ObjectId;
+    content: string;
+    commentatorInfo: CommentatorInfoType;
+    createdAt: string;
+    _postId: ObjectId;
+    _blogId: ObjectId;
+    likesInfo: CommentatorLikesInfoType;
+  };
+};

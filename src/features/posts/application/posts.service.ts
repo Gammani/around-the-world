@@ -14,6 +14,8 @@ import {
   UpdateInputPostModelType,
 } from '../api/models/input/post.input.model';
 import { PostViewModel } from '../api/models/output/post.output.model';
+import { PostDbType } from '../../types';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class PostsService {
@@ -25,13 +27,13 @@ export class PostsService {
     private postsRepository: PostsRepository,
   ) {}
 
-  async findPostById(postId: string): Promise<PostDocument | null> {
+  async findPostById(postId: string): Promise<PostDbType | null> {
     return await this.postsRepository.findPostById(postId);
   }
 
   async createPostByAdminWithBlogId(
     createInputPostModel: PostCreateModel,
-    blogId: string,
+    blogId: ObjectId,
     blogName: string,
   ): Promise<PostViewModel> {
     const createdPost = this.PostModel.createPostWithUriBlogId(

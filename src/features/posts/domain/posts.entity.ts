@@ -100,7 +100,7 @@ export const PostSchema = SchemaFactory.createForClass(Post);
 
 PostSchema.statics.createPostWithUriBlogId = (
   postInputDto: PostCreateModel,
-  blogId: string,
+  blogId: ObjectId,
   blogName: string,
   PostModel: Model<PostDocument> & PostModelWithUriBlogIdStaticType,
 ) => {
@@ -109,7 +109,7 @@ PostSchema.statics.createPostWithUriBlogId = (
   post.title = postInputDto.title;
   post.shortDescription = postInputDto.shortDescription;
   post.content = postInputDto.content;
-  post.blogId = new ObjectId(blogId);
+  post.blogId = blogId;
   post.blogName = blogName;
   post.createdAt = new Date().toISOString();
   post.extendedLikesInfo = {
@@ -146,7 +146,7 @@ PostSchema.statics.createPost = (
 export type PostModelWithUriBlogIdStaticType = {
   createPostWithUriBlogId: (
     postInputDto: PostCreateModel,
-    blogId: string,
+    blogId: ObjectId,
     blogName: string,
     PostModel: Model<PostDocument> & PostModelWithUriBlogIdStaticType,
   ) => {

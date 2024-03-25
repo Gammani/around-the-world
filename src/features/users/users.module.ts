@@ -7,7 +7,7 @@ import { UsersRepository } from './infrastructure/users.repository';
 import { UsersQueryRepository } from './infrastructure/users.query.repository';
 import { PasswordAdapter } from '../adapter/password.adapter';
 import { EmailManager } from '../adapter/email.manager';
-import { SecurityDevicesService } from '../devices/application/security-devices.service';
+import { SecurityDevicesService } from '../devices/application/security.devices.service';
 import { DeviceRepository } from '../devices/infrastructure/device.repository';
 import { Device, DeviceSchema } from '../devices/domain/devices.entity';
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
@@ -15,6 +15,7 @@ import {
   ExpiredToken,
   ExpiredTokenSchema,
 } from '../expiredToken/domain/expired-token.entity';
+import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import {
     SecurityDevicesService,
     DeviceRepository,
     ExpiredTokenRepository,
+    BasicAuthGuard,
   ],
 })
 export class UsersModule {}

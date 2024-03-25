@@ -9,11 +9,13 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserWithPaginationViewModel } from './models/output/user.output.model';
 import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 import { UsersService } from '../application/users.service';
 import { UserCreateModel } from './models/input/create-user.input.model';
+import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -55,6 +57,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUserByAdmin(@Body() inputUserModel: UserCreateModel) {

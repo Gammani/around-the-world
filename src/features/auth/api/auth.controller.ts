@@ -23,7 +23,7 @@ import {
   RequestWithDeviceId,
   RequestWithUser,
 } from './models/input/auth.input.model';
-import { SecurityDevicesService } from '../../devices/application/security-devices.service';
+import { SecurityDevicesService } from '../../devices/application/security.devices.service';
 import { JwtService } from '../application/jwt.service';
 import { DeviceDbType } from '../../types';
 import { EmailInputModel } from './models/input/email.input.model';
@@ -138,6 +138,6 @@ export class AuthController {
   @UseGuards(CheckRefreshToken)
   @Get('me')
   async me(@Req() req: Request & RequestWithDeviceId) {
-    return await this.usersService.findUserByDeviceId(req.deviceId);
+    return await this.usersService.findUserViewModelByDeviceId(req.deviceId);
   }
 }

@@ -11,7 +11,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailManager } from '../adapter/email.manager';
 import { AuthService } from './application/auth.service';
 import { EmailCodeIsConfirmConstraint } from '../../infrastructure/decorators/validate/email-code-is-confirm-constraint.service';
-import { SecurityDevicesService } from '../devices/application/security-devices.service';
+import { SecurityDevicesService } from '../devices/application/security.devices.service';
 import { Device, DeviceSchema } from '../devices/domain/devices.entity';
 import { DeviceRepository } from '../devices/infrastructure/device.repository';
 import { JwtService } from './application/jwt.service';

@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../domain/posts.entity';
 import { Model } from 'mongoose';
 import { LikeStatus } from '../../types';
-import { PostLike, PostLikeDocument } from '../../postLike/postsLike.schema';
+import {
+  PostLike,
+  PostLikeDocument,
+} from '../../postLike/domain/postLike.entity';
 import { ObjectId } from 'mongodb';
 import {
   customFilteredPostLikesType,

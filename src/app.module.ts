@@ -10,6 +10,8 @@ import { BlogModule } from './features/blogs/blog.module';
 import { PostModule } from './features/posts/post.module';
 import { AuthModule } from './features/auth/auth.module';
 import { ExpiredTokenModule } from './features/expiredToken/expired.token.module';
+import { CommentModule } from './features/comments/comment.module';
+import { SecurityDeviceModule } from './features/devices/sequrity.device.module';
 
 @Module({
   imports: [
@@ -23,7 +25,9 @@ import { ExpiredTokenModule } from './features/expiredToken/expired.token.module
     UsersModule,
     BlogModule,
     PostModule,
+    CommentModule,
     ExpiredTokenModule,
+    SecurityDeviceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

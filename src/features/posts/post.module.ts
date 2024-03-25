@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from './domain/posts.entity';
-import { PostLike, PostLikeSchema } from '../postLike/postsLike.schema';
+import { PostLike, PostLikeSchema } from '../postLike/domain/postLike.entity';
 import { PostsService } from './application/posts.service';
 import { PostsRepository } from './infrastructure/posts.repository';
 import { PostsController } from './api/posts.controller';
@@ -10,25 +10,52 @@ import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 import { Blog, BlogSchema } from '../blogs/domain/blogs.entity';
 import {
   CommentLike,
-  CommentLikeEntity,
+  CommentLikeSchema,
 } from '../commentLike/domain/commentLike.entity';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query.repository';
 import { Comment, CommentSchema } from '../comments/domain/comments.entity';
 import { PostsQueryRepository } from './infrastructure/posts.query.repository';
 import { BlogIdIsExistConstraint } from '../../infrastructure/decorators/validate/blogId.isExist.decorator';
+import { PostLikeRepository } from '../postLike/infrastructure/postLike.repository';
+import { PostLikeService } from '../postLike/application/postLike.service';
+import { SecurityDevicesService } from '../devices/application/security.devices.service';
+import { Device, DeviceSchema } from '../devices/domain/devices.entity';
+import { DeviceRepository } from '../devices/infrastructure/device.repository';
+import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
+import {
+  ExpiredToken,
+  ExpiredTokenSchema,
+} from '../expiredToken/domain/expired-token.entity';
+import { PasswordAdapter } from '../adapter/password.adapter';
+import { JwtService } from '../auth/application/jwt.service';
+import { UsersService } from '../users/application/users.service';
+import { UsersRepository } from '../users/infrastructure/users.repository';
+import { User, UserSchema } from '../users/domain/user.entity';
+import { UsersQueryRepository } from '../users/infrastructure/users.query.repository';
+import { EmailManager } from '../adapter/email.manager';
+import { CommentsService } from '../comments/application/comments.service';
+import { CommentsRepository } from '../comments/infrastructure/comments.repository';
+import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: PostLike.name, schema: PostLikeSchema },
-      { name: CommentLike.name, schema: CommentLikeEntity },
+      { name: CommentLike.name, schema: CommentLikeSchema },
+      { name: PostLike.name, schema: PostLikeSchema },
+      { name: Device.name, schema: DeviceSchema },
+      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
   ],
   controllers: [PostsController],
   providers: [
+    UsersService,
+    UsersRepository,
+    UsersQueryRepository,
     BlogsService,
     BlogsRepository,
     PostsService,
@@ -36,6 +63,17 @@ import { BlogIdIsExistConstraint } from '../../infrastructure/decorators/validat
     PostsQueryRepository,
     CommentsQueryRepository,
     BlogIdIsExistConstraint,
+    PostLikeRepository,
+    PostLikeService,
+    SecurityDevicesService,
+    DeviceRepository,
+    ExpiredTokenRepository,
+    PasswordAdapter,
+    JwtService,
+    EmailManager,
+    CommentsService,
+    CommentsRepository,
+    BasicAuthGuard,
   ],
 })
 export class PostModule {}

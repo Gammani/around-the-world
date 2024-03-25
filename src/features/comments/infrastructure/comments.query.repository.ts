@@ -7,8 +7,11 @@ import {
   CommentLike,
   CommentLikeDocument,
 } from '../../commentLike/domain/commentLike.entity';
-import { LikeStatus } from '../../types';
-import { CommentsWithPaginationViewModel } from '../api/models/input/comment.input.model';
+import { CommentDbType, LikeStatus } from '../../types';
+import {
+  CommentsWithPaginationViewModel,
+  CommentViewModel,
+} from '../api/models/output/comment-output.model';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -17,6 +20,45 @@ export class CommentsQueryRepository {
     @InjectModel(CommentLike.name)
     private CommentLikeModel: Model<CommentLikeDocument>,
   ) {}
+
+  async findCommentById(
+    id: string,
+    userId?: ObjectId,
+  ): Promise<CommentViewModel | null> {
+    const foundComment: CommentDbType | null = await this.CommentModel.findOne({
+      _id: id,
+    });
+
+    if (foundComment) {
+      const myStatus = await this.CommentLikeModel.findOne({
+        commentId: foundComment._id,
+        userId,
+      });
+
+      return {
+        id: foundComment._id.toString(),
+        content: foundComment.content,
+        commentatorInfo: {
+          userId: foundComment.commentatorInfo.userId,
+          userLogin: foundComment.commentatorInfo.userLogin,
+        },
+        createdAt: foundComment.createdAt,
+        likesInfo: {
+          likesCount: await this.CommentLikeModel.find({
+            commentId: foundComment._id,
+            likeStatus: LikeStatus.Like,
+          }).countDocuments({}),
+          dislikesCount: await this.CommentLikeModel.find({
+            commentId: foundComment._id,
+            likeStatus: LikeStatus.Dislike,
+          }).countDocuments({}),
+          myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
+        },
+      };
+    } else {
+      return null;
+    }
+  }
 
   async findComments(
     pageNumberQuery: string | undefined,

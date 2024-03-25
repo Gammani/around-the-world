@@ -8,7 +8,6 @@ import {
 import { Model } from 'mongoose';
 import { DeviceDbType } from '../../types';
 import { ObjectId } from 'mongodb';
-import { DeviceViewModel } from '../api/output/device.output.model';
 
 @Injectable()
 export class DeviceRepository {
@@ -40,17 +39,7 @@ export class DeviceRepository {
       { $set: { lastActiveDate: new Date() } },
     );
   }
-  async findAllActiveSessionFromUserId(
-    userId: string,
-  ): Promise<DeviceViewModel[] | undefined> {
-    const result = await this.DeviceModel.find({ userId: userId });
-    return result.map((i: DeviceDbType) => ({
-      ip: i.ip,
-      title: i.deviceName,
-      lastActiveDate: i.lastActiveDate,
-      deviceId: i._id.toString(),
-    }));
-  }
+
   async findDeviceFromUserId(
     deviceId: ObjectId,
     userId: ObjectId,
@@ -77,7 +66,10 @@ export class DeviceRepository {
     return;
   }
   async deleteAll() {
-    this.DeviceModel.deleteMany({});
-    return;
+    await this.DeviceModel.deleteMany({});
+  }
+  // для своего теста
+  async findDeviceTestByUserId(userId: string) {
+    return this.DeviceModel.findOne({ userId: userId });
   }
 }

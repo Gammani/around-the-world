@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EmailManager } from '../../adapter/email.manager';
 import { UserDbType } from '../../types';
 import { ObjectId } from 'mongodb';
-import { SecurityDevicesService } from '../../devices/application/security-devices.service';
+import { SecurityDevicesService } from '../../devices/application/security.devices.service';
 import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 
 @Injectable()
@@ -77,11 +77,22 @@ export class UsersService {
   async findUserById(userId: string): Promise<UserDbType | null> {
     return this.usersRepository.findUserById(userId);
   }
-  async findUserByDeviceId(deviceId: ObjectId): Promise<UserViewModel | null> {
+  async findUserViewModelByDeviceId(
+    deviceId: ObjectId,
+  ): Promise<UserViewModel | null> {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
     if (userId) {
       return await this.usersQueryRepository.findUserById(userId);
+    } else {
+      return null;
+    }
+  }
+  async findUserByDeviceId(deviceId: ObjectId): Promise<UserDbType | null> {
+    const userId =
+      await this.securityDevicesService.findUserIdByDeviceId(deviceId);
+    if (userId) {
+      return await this.usersRepository.findUserById(userId);
     } else {
       return null;
     }

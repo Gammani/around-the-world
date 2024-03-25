@@ -9,12 +9,12 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
 import { BlogsService } from '../application/blogs.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
 import { PostsService } from '../../posts/application/posts.service';
-import { BlogDocument } from '../domain/blogs.entity';
 import { BlogWithPaginationViewModel } from './models/output/blog.output.model';
 import {
   BlogCreateModel,
@@ -22,6 +22,8 @@ import {
 } from './models/input/blog.input.model';
 import { PostsWithPaginationViewModel } from '../../posts/api/models/output/post.output.model';
 import { PostCreateModel } from '../../posts/api/models/input/post.input.model';
+import { BlogDbType } from '../../types';
+import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -54,6 +56,7 @@ export class BlogsController {
     return foundBlogs;
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlogByAdmin(@Body() inputBlogModel: BlogCreateModel) {
     return this.blogService.createBlogByAdmin(inputBlogModel);
@@ -88,17 +91,18 @@ export class BlogsController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post(':blogId/posts')
   async createPostByBlogIdByAdmin(
     @Param('blogId') blogId: string,
     @Body() inputPostModel: PostCreateModel,
   ) {
-    const foundBlog: BlogDocument | null =
+    const foundBlog: BlogDbType | null =
       await this.blogService.findBlogById(blogId);
     if (foundBlog) {
       return await this.postsService.createPostByAdminWithBlogId(
         inputPostModel,
-        foundBlog.id,
+        foundBlog._id,
         foundBlog.name,
       );
     } else {
@@ -111,6 +115,7 @@ export class BlogsController {
     return await this.blogQueryRepository.findBlogById(blogId);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updateBlogByAdmin(
@@ -125,6 +130,7 @@ export class BlogsController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async removeBlogByAdmin(@Param('id') blogId: string) {

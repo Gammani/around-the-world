@@ -44,4 +44,8 @@ export class ExpiredTokenRepository {
     await expiredTokenInstance.save();
     return;
   }
+
+  async deleteAll() {
+    await this.ExpiredTokenModel.deleteMany({});
+  }
 }

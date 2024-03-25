@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   Blog,
   BlogDocument,
@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { CreatedBlogViewModel } from '../api/models/output/blog.output.model';
 import { BlogUpdateModel } from '../api/models/input/blog.input.model';
+import { BlogDbType } from '../../types';
 
 @Injectable()
 export class BlogsRepository {
@@ -29,9 +30,9 @@ export class BlogsRepository {
     };
   }
 
-  async findBlogById(blogId: string): Promise<BlogDocument | null> {
+  async findBlogById(blogId: string): Promise<BlogDbType | null> {
     if (!ObjectId.isValid(blogId)) {
-      throw new NotFoundException();
+      return null;
     }
     return this.BlogModel.findById(blogId);
   }
@@ -64,5 +65,9 @@ export class BlogsRepository {
 
   async deleteAll() {
     await this.BlogModel.deleteMany({});
+  }
+  // for tests
+  async findBlogByName(blogName: string) {
+    return this.BlogModel.findOne({ name: blogName });
   }
 }

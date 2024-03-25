@@ -7,9 +7,10 @@ import { BlogsService } from './application/blogs.service';
 import { BlogsRepository } from './infrastructure/blogs.repository';
 import { PostsQueryRepository } from '../posts/infrastructure/posts.query.repository';
 import { Post, PostSchema } from '../posts/domain/posts.entity';
-import { PostLike, PostLikeSchema } from '../postLike/postsLike.schema';
+import { PostLike, PostLikeSchema } from '../postLike/domain/postLike.entity';
 import { PostsService } from '../posts/application/posts.service';
 import { PostsRepository } from '../posts/infrastructure/posts.repository';
+import { BasicStrategy } from '../auth/strategies/basic.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PostsRepository } from '../posts/infrastructure/posts.repository';
     PostsService,
     PostsRepository,
     PostsQueryRepository,
+    BasicStrategy,
   ],
 })
 export class BlogModule {}

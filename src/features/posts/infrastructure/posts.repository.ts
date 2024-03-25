@@ -6,7 +6,7 @@ import {
   PostModelWithUriBlogIdStaticType,
 } from '../domain/posts.entity';
 import { Model } from 'mongoose';
-import { LikeStatus } from '../../types';
+import { LikeStatus, PostDbType } from '../../types';
 import { ObjectId } from 'mongodb';
 import { PostViewModel } from '../api/models/output/post.output.model';
 import { UpdateInputPostModelType } from '../api/models/input/post.input.model';
@@ -18,9 +18,9 @@ export class PostsRepository {
     private PostModel: Model<PostDocument & PostModelWithUriBlogIdStaticType>,
   ) {}
 
-  async findPostById(postId: string): Promise<PostDocument | null> {
+  async findPostById(postId: string): Promise<PostDbType | null> {
     if (!ObjectId.isValid(postId)) {
-      throw new NotFoundException();
+      return null;
     } else {
       return this.PostModel.findById(postId);
     }
@@ -81,5 +81,10 @@ export class PostsRepository {
 
   async deleteAll() {
     await this.PostModel.deleteMany({});
+  }
+
+  // for tests
+  async findPostByTitle(postTitle: string) {
+    return this.PostModel.findOne({ title: postTitle });
   }
 }
