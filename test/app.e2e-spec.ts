@@ -222,7 +222,7 @@ describe('AppController (e2e)', () => {
       const device = await devicesRepository.findDeviceTestByUserId(
         foundUser!._id.toString(),
       );
-      console.log('device = ', device);
+      // console.log('device = ', device);
       // const accessTokenByUserId = await jwtService.createAccessJWT(device!._id);
       // const userId = user!._id.toString()
       // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
