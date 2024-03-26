@@ -40,7 +40,7 @@ DeviceSchema.statics.createDevice = (
   device._id = new ObjectId();
   device.userId = userId;
   device.ip = ip;
-  device.deviceName = deviceName;
+  device.deviceName = deviceName || 'unknown';
   device.lastActiveDate = new Date().toISOString();
 
   return device;

@@ -75,6 +75,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(200)
   async login(
     @Body() authInputModel: AuthInputModel,
     @Ip()
@@ -94,7 +95,7 @@ export class AuthController {
       httpOnly: false,
       secure: false,
     });
-    return accessToken;
+    return { accessToken: accessToken };
   }
 
   @UseGuards(CheckRefreshToken)

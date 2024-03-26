@@ -218,22 +218,29 @@ describe('AppController (e2e)', () => {
     });
 
     it('should login and return accessToken from correct input date', async () => {
-      const foundUser = await usersRepository.findUserByLoginOrEmail('Leha');
-      const device = await devicesRepository.findDeviceTestByUserId(
-        foundUser!._id.toString(),
-      );
+      // const foundUser = await usersRepository.findUserByLoginOrEmail('Leha');
+      // const device = await devicesRepository.findDeviceTestByUserId(
+      //   foundUser!._id.toString(),
+      // );
       // console.log('device = ', device);
       // const accessTokenByUserId = await jwtService.createAccessJWT(device!._id);
       // const userId = user!._id.toString()
       // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
 
-      await request(app.getHttpServer())
+      const loginResponse = await request(app.getHttpServer())
         .post('/auth/login')
-        .send({
-          loginOrEmail: 'Leha',
-          password: 'string',
-        })
-        .expect(HTTP_STATUSES.OK_200);
+        .send({ loginOrEmail: 'Leha', password: 'string' });
+      expect(loginResponse.status).toBe(HTTP_STATUSES.OK_200);
+      expect(loginResponse.body).toEqual({ accessToken: expect.any(String) });
+
+      const firstAccessToken = loginResponse.body;
+      // await request(app.getHttpServer())
+      //   .post('/auth/login')
+      //   .send({
+      //     loginOrEmail: 'Leha',
+      //     password: 'string',
+      //   });
+      //   expect(loginResponse.status).toBe;
       //.expect({ accessToken: `${accessTokenByUserId}` });
     });
 
