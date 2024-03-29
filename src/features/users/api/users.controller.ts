@@ -64,6 +64,7 @@ export class UsersController {
     return this.usersService.createUserByAdmin(inputUserModel);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async removeUserByAdmin(@Param('id') userId: string) {
