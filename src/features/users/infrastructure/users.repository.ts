@@ -75,7 +75,9 @@ export class UsersRepository {
     const foundUser = await this.UserModel.findOne({
       'accountData.email': email,
     });
-    return !foundUser;
+    if (foundUser && !foundUser.emailConfirmation.isConfirmed) {
+      return !!foundUser;
+    } else return false;
   }
   async updateConfirmationStatus(_id: string): Promise<boolean> {
     debugger;

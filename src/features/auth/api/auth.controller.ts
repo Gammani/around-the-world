@@ -123,12 +123,7 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() emailInputModel: EmailInputModel) {
-    const isConfirmed: boolean = await this.authService.resendCode(
-      emailInputModel.email,
-    );
-    if (!isConfirmed) {
-      throw new BadRequestException();
-    }
+    await this.authService.resendCode(emailInputModel.email);
   }
 
   @UseGuards(CheckRefreshToken)
