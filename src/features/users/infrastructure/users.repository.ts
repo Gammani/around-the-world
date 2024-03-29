@@ -77,19 +77,18 @@ export class UsersRepository {
     });
     return !foundUser;
   }
-  async emailIsValid(email: string): Promise<boolean> {
+  async emailIsConfirmed(email: string): Promise<boolean> {
     const foundUser = await this.UserModel.findOne({
       'accountData.email': email,
     });
-    // return !foundUser;
     if (foundUser) {
       if (foundUser.emailConfirmation.isConfirmed !== true) {
-        return false;
-      } else {
         return true;
+      } else {
+        return false;
       }
     } else {
-      return true;
+      return false;
     }
   }
   async updateConfirmationStatus(_id: string): Promise<boolean> {

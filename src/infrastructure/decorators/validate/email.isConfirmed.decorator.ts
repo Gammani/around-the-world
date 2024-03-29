@@ -30,7 +30,7 @@ export class EmailIsConfirmedConstraint
 {
   constructor(private readonly userService: UsersService) {}
   async validate(email: string) {
-    return await this.userService.emailIsExist(email);
+    return await this.userService.emailIsConfirmed(email);
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {

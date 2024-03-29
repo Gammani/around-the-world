@@ -139,6 +139,9 @@ export class UsersService {
   async emailIsExist(email: string): Promise<boolean> {
     return await this.usersRepository.emailIsExist(email);
   }
+  async emailIsConfirmed(email: string): Promise<boolean> {
+    return await this.usersRepository.emailIsConfirmed(email);
+  }
   async removeUserByAdmin(userId: string): Promise<boolean> {
     return await this.usersRepository.deleteUser(userId);
   }
