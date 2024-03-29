@@ -23,6 +23,7 @@ import {
   ExpiredTokenSchema,
 } from '../expiredToken/domain/expired-token.entity';
 import { UsersQueryRepository } from '../users/infrastructure/users.query.repository';
+import { EmailIsConfirmedConstraint } from '../../infrastructure/decorators/validate/email.isConfirmed.decorator';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { UsersQueryRepository } from '../users/infrastructure/users.query.reposi
     LoginIsExistConstraint,
     EmailCodeIsConfirmConstraint,
     EmailIsExistConstraint,
+    EmailIsConfirmedConstraint,
     DeviceRepository,
     SecurityDevicesService,
     JwtService,
