@@ -1,5 +1,6 @@
 import { UsersService } from '../../users/application/users.service';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -122,7 +123,12 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() emailInputModel: EmailInputModel) {
-    await this.authService.resendCode(emailInputModel.email);
+    const isConfirmed: boolean = await this.authService.resendCode(
+      emailInputModel.email,
+    );
+    if (!isConfirmed) {
+      throw new BadRequestException();
+    }
   }
 
   @UseGuards(CheckRefreshToken)

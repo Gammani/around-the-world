@@ -51,10 +51,10 @@ export class AuthService {
       );
     }
   }
-  async resendCode(email: string) {
+  async resendCode(email: string): Promise<boolean> {
     const foundUser: UserDbType | null =
       await this.usersRepository.findUserByEmail(email);
-    if (foundUser && foundUser.emailConfirmation.isConfirmed !== true) {
+    if (foundUser && !foundUser.emailConfirmation.isConfirmed) {
       const code = uuidv4();
       await this.usersRepository.updateConfirmationCode(email, code);
       try {
@@ -66,11 +66,13 @@ export class AuthService {
      <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
  </p>\``,
         );
-        return;
+        return true;
       } catch (e) {
         console.log(e);
-        return;
+        return false;
       }
+    } else {
+      return false;
     }
   }
   async validateUser(
