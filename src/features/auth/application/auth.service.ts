@@ -54,7 +54,7 @@ export class AuthService {
   async resendCode(email: string) {
     const foundUser: UserDbType | null =
       await this.usersRepository.findUserByEmail(email);
-    if (foundUser && !foundUser.emailConfirmation.isConfirmed) {
+    if (foundUser && foundUser.emailConfirmation.isConfirmed !== true) {
       const code = uuidv4();
       await this.usersRepository.updateConfirmationCode(email, code);
       try {
