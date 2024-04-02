@@ -1,6 +1,5 @@
 import { UsersService } from '../../users/application/users.service';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,7 +12,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { UserCreateModel } from '../../users/api/models/input/create-user.input.model';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from '../application/auth.service';
@@ -30,22 +29,30 @@ import { DeviceDbType } from '../../types';
 import { EmailInputModel } from './models/input/email.input.model';
 import { NewPasswordModel } from './models/input/new.password.model';
 import { CheckRefreshToken } from '../guards/jwt-auth.guard';
-import { Request } from 'express';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateUserCommand } from '../application/use-cases/createUser.useCase';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
+    private commandBus: CommandBus,
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly securityDevicesService: SecurityDevicesService,
     private readonly jwtService: JwtService,
   ) {}
 
+  // @Post('registration')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // async registration(@Body() createUserModel: UserCreateModel) {
+  //   await this.usersService.createUser(createUserModel);
+  // }
+
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() createUserModel: UserCreateModel) {
-    await this.usersService.createUser(createUserModel);
+    return this.commandBus.execute(new CreateUserCommand(createUserModel));
   }
 
   @Post('registration-confirmation')

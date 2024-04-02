@@ -24,6 +24,13 @@ import {
 } from '../expiredToken/domain/expired-token.entity';
 import { UsersQueryRepository } from '../users/infrastructure/users.query.repository';
 import { EmailIsConfirmedConstraint } from '../../infrastructure/decorators/validate/email.isConfirmed.decorator';
+import {
+  CreateUserCommand,
+  CreateUserUserCase,
+} from './application/use-cases/createUser.useCase';
+import { CommandBus } from '@nestjs/cqrs';
+
+const useCases = [CreateUserUserCase];
 
 @Module({
   imports: [
@@ -58,6 +65,9 @@ import { EmailIsConfirmedConstraint } from '../../infrastructure/decorators/vali
     JwtStrategy,
     EmailManager,
     ExpiredTokenRepository,
+    CreateUserUserCase,
+    CreateUserCommand,
+    CommandBus,
   ],
 })
 export class AuthModule {}

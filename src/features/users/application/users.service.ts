@@ -42,38 +42,38 @@ export class UsersService {
     );
     return await this.usersRepository.createUser(createdUser);
   }
-  async createUser(
-    inputUserModel: UserCreateModel,
-  ): Promise<CreatedUserViewModel | null> {
-    const passwordHash = await this.passwordAdapter.createPasswordHash(
-      inputUserModel.password,
-    );
-    const confirmationCode = uuidv4();
-    const createUser = this.UserModel.createUser(
-      inputUserModel,
-      passwordHash,
-      this.UserModel,
-      false,
-      confirmationCode,
-    );
-
-    const createdUser = await this.usersRepository.createUser(createUser);
-    try {
-      await this.emailManager.sendEmail(
-        inputUserModel.email,
-        inputUserModel.login,
-        `\` <h1>Thank for your registration</h1>
- <p>To finish registration please follow the link below:
-     <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
- </p>\``,
-      );
-    } catch (error) {
-      console.log(error);
-      await this.usersRepository.deleteUser(createdUser.id);
-      throw new ServiceUnavailableException();
-    }
-    return createdUser;
-  }
+  //  async createUser(
+  //    inputUserModel: UserCreateModel,
+  //  ): Promise<CreatedUserViewModel | null> {
+  //    const passwordHash = await this.passwordAdapter.createPasswordHash(
+  //      inputUserModel.password,
+  //    );
+  //    const confirmationCode = uuidv4();
+  //    const createUser = this.UserModel.createUser(
+  //      inputUserModel,
+  //      passwordHash,
+  //      this.UserModel,
+  //      false,
+  //      confirmationCode,
+  //    );
+  //
+  //    const createdUser = await this.usersRepository.createUser(createUser);
+  //    try {
+  //      await this.emailManager.sendEmail(
+  //        inputUserModel.email,
+  //        inputUserModel.login,
+  //        `\` <h1>Thank for your registration</h1>
+  // <p>To finish registration please follow the link below:
+  //     <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
+  // </p>\``,
+  //      );
+  //    } catch (error) {
+  //      console.log(error);
+  //      await this.usersRepository.deleteUser(createdUser.id);
+  //      throw new ServiceUnavailableException();
+  //    }
+  //    return createdUser;
+  //  }
   async findUserById(userId: string): Promise<UserDbType | null> {
     return this.usersRepository.findUserById(userId);
   }
