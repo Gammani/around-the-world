@@ -5,19 +5,18 @@ import {
   User,
   UserDocument,
   UserModelStaticType,
-} from '../../../users/domain/user.entity';
+} from '../../domain/user.entity';
 import { Model } from 'mongoose';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { UsersRepository } from '../../infrastructure/users.repository';
 import { EmailManager } from '../../../adapter/email.manager';
 import { v4 as uuidv4 } from 'uuid';
-import { UserCreateModel } from '../../../users/api/models/input/create-user.input.model';
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { UserCreateModel } from '../../api/models/input/create-user.input.model';
+import { ServiceUnavailableException } from '@nestjs/common';
 
 export class CreateUserCommand {
   constructor(public inputUserModel: UserCreateModel) {}
 }
 
-@Injectable()
 @CommandHandler(CreateUserCommand)
 export class CreateUserUserCase implements ICommandHandler<CreateUserCommand> {
   constructor(

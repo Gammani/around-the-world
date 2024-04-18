@@ -16,7 +16,7 @@ import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 import {
   CreateUserCommand,
   CreateUserUserCase,
-} from './features/auth/application/use-cases/createUser.useCase';
+} from './features/users/application/use-cases/createUser.useCase';
 import { User, UserSchema } from './features/users/domain/user.entity';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { EmailManager } from './features/adapter/email.manager';
@@ -41,14 +41,6 @@ import { PasswordAdapter } from './features/adapter/password.adapter';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    CreateUserCommand,
-    CreateUserUserCase,
-    UsersRepository,
-    EmailManager,
-    PasswordAdapter,
-    CommandBus,
-  ],
+  providers: [AppService, UsersRepository, EmailManager, PasswordAdapter],
 })
 export class AppModule {}

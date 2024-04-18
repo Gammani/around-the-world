@@ -15,9 +15,9 @@ export class DeviceRepository {
     @InjectModel(Device.name)
     private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
   ) {}
-
-  async createDevice(createdDeviceDto: any): Promise<DeviceDbType> {
-    return await createdDeviceDto.save();
+  async createDevice(createdDeviceDtoModel: DeviceDocument) {
+    await createdDeviceDtoModel.save();
+    return createdDeviceDtoModel;
   }
   async findDeviceByDeviceId(deviceId: ObjectId): Promise<DeviceDbType | null> {
     return this.DeviceModel.findOne({ _id: deviceId });

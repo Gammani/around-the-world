@@ -24,13 +24,19 @@ import {
 } from '../expiredToken/domain/expired-token.entity';
 import { UsersQueryRepository } from '../users/infrastructure/users.query.repository';
 import { EmailIsConfirmedConstraint } from '../../infrastructure/decorators/validate/email.isConfirmed.decorator';
-import {
-  CreateUserCommand,
-  CreateUserUserCase,
-} from './application/use-cases/createUser.useCase';
-import { CommandBus } from '@nestjs/cqrs';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ConfirmEmailUseCase } from './application/use-cases/confirmEmail.useCase';
+import { IsValidRecoveryCodeConstraint } from '../../infrastructure/decorators/validate/isValid.recoveryCode.decorator';
+import { IsValidEmailConstraint } from '../../infrastructure/decorators/validate/email.isValid.decorator';
+import { UpdatePasswordUseCase } from './application/use-cases/updatePassword.useCase';
+import { PasswordRecoveryUseCase } from './application/use-cases/passwordRecovery.useCase';
 
-const useCases = [CreateUserUserCase];
+const useCases = [
+  ConfirmEmailUseCase,
+  UpdatePasswordUseCase,
+  PasswordRecoveryUseCase,
+  PasswordRecoveryUseCase,
+];
 
 @Module({
   imports: [
@@ -45,6 +51,7 @@ const useCases = [CreateUserUserCase];
         limit: 5,
       },
     ]),
+    CqrsModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -58,6 +65,8 @@ const useCases = [CreateUserUserCase];
     EmailCodeIsConfirmConstraint,
     EmailIsExistConstraint,
     EmailIsConfirmedConstraint,
+    IsValidRecoveryCodeConstraint,
+    IsValidEmailConstraint,
     DeviceRepository,
     SecurityDevicesService,
     JwtService,
@@ -65,9 +74,7 @@ const useCases = [CreateUserUserCase];
     JwtStrategy,
     EmailManager,
     ExpiredTokenRepository,
-    CreateUserUserCase,
-    CreateUserCommand,
-    CommandBus,
+    ...useCases,
   ],
 })
 export class AuthModule {}

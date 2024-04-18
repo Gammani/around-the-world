@@ -31,26 +31,23 @@ export class Device {
 export const DeviceSchema = SchemaFactory.createForClass(Device);
 
 DeviceSchema.statics.createDevice = (
-  userId: ObjectId,
-  ip: string,
-  deviceName: string,
+  createdDeviceDtoModel,
   DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
 ): DeviceDocument => {
   const device = new DeviceModel();
   device._id = new ObjectId();
-  device.userId = userId;
-  device.ip = ip;
-  device.deviceName = deviceName || 'unknown';
+  device.userId = createdDeviceDtoModel.userId;
+  device.ip = createdDeviceDtoModel.ip;
+  device.deviceName = createdDeviceDtoModel.deviceName || 'unknown';
   device.lastActiveDate = new Date().toISOString();
 
+  console.log(device);
   return device;
 };
 
 export type DeviceModelStaticType = {
   createDevice: (
-    userId: ObjectId,
-    ip: string,
-    deviceName: string,
+    createdDeviceDtoModel: any,
     DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
   ) => {
     _id: ObjectId;

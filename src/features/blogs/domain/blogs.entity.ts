@@ -48,7 +48,7 @@ BlogSchema.statics.createBlog = (
   blog.websiteUrl = dto.websiteUrl;
   blog.createdAt = new Date().toISOString();
   blog.isMembership = true;
-
+  console.log(blog);
   return blog;
 };
 

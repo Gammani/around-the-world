@@ -8,7 +8,6 @@ import {
 } from '../domain/devices.entity';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
-import { DeviceDbType } from '../../types';
 import { ExpiredTokenRepository } from '../../expiredToken/infrastructure/expired.token.repository';
 
 @Injectable()
@@ -19,20 +18,6 @@ export class SecurityDevicesService {
     private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
     private expiredTokenRepository: ExpiredTokenRepository,
   ) {}
-
-  async addDevice(
-    userId: ObjectId,
-    ip: string,
-    deviceName: string,
-  ): Promise<DeviceDbType> {
-    const createDevice = this.DeviceModel.createDevice(
-      userId,
-      ip,
-      deviceName,
-      this.DeviceModel,
-    );
-    return await this.devicesRepository.createDevice(createDevice);
-  }
   async addExpiredRefreshToken(deviceId: ObjectId, refreshToken: string) {
     const foundUserId = await this.findUserIdByDeviceId(deviceId);
     debugger;
@@ -54,9 +39,9 @@ export class SecurityDevicesService {
   async findDeviceFromUserId(deviceId: ObjectId, userId: ObjectId) {
     return this.devicesRepository.findDeviceFromUserId(deviceId, userId);
   }
-  async deleteCurrentSessionById(deviceId: ObjectId): Promise<boolean> {
-    return await this.devicesRepository.deleteCurrentSessionById(deviceId);
-  }
+  // async deleteCurrentSessionById(deviceId: ObjectId): Promise<boolean> {
+  //   return await this.devicesRepository.deleteCurrentSessionById(deviceId);
+  // }
   async deleteAllSessionExcludeCurrent(deviceId: ObjectId) {
     await this.devicesRepository.deleteAllSessionExcludeCurrent(deviceId);
     return;

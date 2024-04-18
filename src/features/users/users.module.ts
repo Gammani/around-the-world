@@ -16,6 +16,11 @@ import {
   ExpiredTokenSchema,
 } from '../expiredToken/domain/expired-token.entity';
 import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
+import { GetUserViewModelByDeviceIdUseCase } from './application/use-cases/getUserViewModelByDeviceId.useCase';
+import { CreateUserUserCase } from './application/use-cases/createUser.useCase';
+import { CqrsModule } from '@nestjs/cqrs';
+
+const useCases = [CreateUserUserCase, GetUserViewModelByDeviceIdUseCase];
 
 @Module({
   imports: [
@@ -27,6 +32,7 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
       { name: Device.name, schema: DeviceSchema },
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
+    CqrsModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -39,6 +45,7 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
     DeviceRepository,
     ExpiredTokenRepository,
     BasicAuthGuard,
+    ...useCases,
   ],
 })
 export class UsersModule {}

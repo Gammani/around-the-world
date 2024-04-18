@@ -25,12 +25,19 @@ import {
 } from './models/input/auth.input.model';
 import { SecurityDevicesService } from '../../devices/application/security.devices.service';
 import { JwtService } from '../application/jwt.service';
-import { DeviceDbType } from '../../types';
 import { EmailInputModel } from './models/input/email.input.model';
 import { NewPasswordModel } from './models/input/new.password.model';
 import { CheckRefreshToken } from '../guards/jwt-auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../application/use-cases/createUser.useCase';
+import { CreateUserCommand } from '../../users/application/use-cases/createUser.useCase';
+import { ConfirmEmailCommand } from '../application/use-cases/confirmEmail.useCase';
+import { UpdatePasswordCommand } from '../application/use-cases/updatePassword.useCase';
+import { EmailPasswordRecoveryInputModel } from './models/input/email.passwordRecovery.input.model';
+import { PasswordRecoveryCommand } from '../application/use-cases/passwordRecovery.useCase';
+import { AddDeviceCommand } from '../../devices/application/use-cases/addDevice.useCase';
+import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
+import { DeleteCurrentSessionByIdCommand } from '../../devices/application/use-cases/deleteCurrentSessionById.useCase';
+import { GetUserViewModelByDeviceIdCommand } from '../../users/application/use-cases/getUserViewModelByDeviceId.useCase';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -43,12 +50,6 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
-  // @Post('registration')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // async registration(@Body() createUserModel: UserCreateModel) {
-  //   await this.usersService.createUser(createUserModel);
-  // }
-
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() createUserModel: UserCreateModel) {
@@ -58,27 +59,23 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body() confirmCodeModel: ConfirmCodeModel) {
-    await this.authService.confirmEmail(confirmCodeModel.code);
+    await this.commandBus.execute(new ConfirmEmailCommand(confirmCodeModel));
   }
 
   @Post('password-recovery')
   @HttpCode(204)
-  async passwordRecovery(@Body() emailInputModel: EmailInputModel) {
-    await this.authService.passwordRecovery(emailInputModel.email);
+  async passwordRecovery(
+    @Body() emailPasswordRecoveryInputModel: EmailPasswordRecoveryInputModel,
+  ) {
+    await this.commandBus.execute(
+      new PasswordRecoveryCommand(emailPasswordRecoveryInputModel),
+    );
   }
 
   @Post('new-password')
   @HttpCode(204)
   async newPassword(@Body() newPasswordModel: NewPasswordModel) {
-    const foundUser = await this.usersService.findUserByRecoveryCode(
-      newPasswordModel.recoveryCode,
-    );
-    if (foundUser) {
-      await this.usersService.updatePassword(
-        newPasswordModel.newPassword,
-        newPasswordModel.recoveryCode,
-      );
-    }
+    await this.commandBus.execute(new UpdatePasswordCommand(newPasswordModel));
   }
 
   @UseGuards(LocalAuthGuard)
@@ -92,10 +89,8 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const device: DeviceDbType = await this.securityDevicesService.addDevice(
-      req.user,
-      ip,
-      deviceName,
+    const device = await this.commandBus.execute(
+      new AddDeviceCommand(req.user, ip, deviceName),
     );
     const accessToken = await this.jwtService.createAccessJWT(device._id);
     const refreshToken = await this.jwtService.createRefreshJWT(device._id);
@@ -112,10 +107,8 @@ export class AuthController {
     @Req() req: Request & RequestWithDeviceId,
     @Res({ passthrough: true }) res: Response,
   ) {
-    debugger;
-    await this.securityDevicesService.addExpiredRefreshToken(
-      req.deviceId,
-      req.cookies.refreshToken,
+    await this.commandBus.execute(
+      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
     );
 
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
@@ -130,7 +123,7 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() emailInputModel: EmailInputModel) {
-    await this.authService.resendCode(emailInputModel.email);
+    await this.commandBus.execute(new PasswordRecoveryCommand(emailInputModel));
   }
 
   @UseGuards(CheckRefreshToken)
@@ -140,13 +133,17 @@ export class AuthController {
     @Req() req: Request & RequestWithDeviceId,
     @Res({ passthrough: true }) res: Response,
   ) {
-    await this.securityDevicesService.deleteCurrentSessionById(req.deviceId);
+    await this.commandBus.execute(
+      new DeleteCurrentSessionByIdCommand(req.deviceId),
+    );
     res.cookie('refreshToken', '', { httpOnly: false, secure: false });
   }
 
   @UseGuards(CheckRefreshToken)
   @Get('me')
   async me(@Req() req: Request & RequestWithDeviceId) {
-    return await this.usersService.findUserViewModelByDeviceId(req.deviceId);
+    return await this.commandBus.execute(
+      new GetUserViewModelByDeviceIdCommand(req.deviceId),
+    );
   }
 }

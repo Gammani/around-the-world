@@ -1,15 +1,11 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import {
-  CreatedUserViewModel,
-  UserViewModel,
-} from '../api/models/output/user.output.model';
+import { Injectable } from '@nestjs/common';
+import { CreatedUserViewModel } from '../api/models/output/user.output.model';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserModelStaticType } from '../domain/user.entity';
 import { Model } from 'mongoose';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { UserCreateModel } from '../api/models/input/create-user.input.model';
-import { v4 as uuidv4 } from 'uuid';
 import { EmailManager } from '../../adapter/email.manager';
 import { UserDbType } from '../../types';
 import { ObjectId } from 'mongodb';
@@ -77,17 +73,17 @@ export class UsersService {
   async findUserById(userId: string): Promise<UserDbType | null> {
     return this.usersRepository.findUserById(userId);
   }
-  async findUserViewModelByDeviceId(
-    deviceId: ObjectId,
-  ): Promise<UserViewModel | null> {
-    const userId =
-      await this.securityDevicesService.findUserIdByDeviceId(deviceId);
-    if (userId) {
-      return await this.usersQueryRepository.findUserById(userId);
-    } else {
-      return null;
-    }
-  }
+  // async findUserViewModelByDeviceId(
+  //   deviceId: ObjectId,
+  // ): Promise<UserViewModel | null> {
+  //   const userId =
+  //     await this.securityDevicesService.findUserIdByDeviceId(deviceId);
+  //   if (userId) {
+  //     return await this.usersQueryRepository.findUserById(userId);
+  //   } else {
+  //     return null;
+  //   }
+  // }
   async findUserByDeviceId(deviceId: ObjectId): Promise<UserDbType | null> {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
@@ -125,19 +121,22 @@ export class UsersService {
       return null;
     }
   }
-  async updatePassword(newPassword: string, recoveryCode: string) {
-    debugger;
-    const foundUser = await this.findUserByRecoveryCode(recoveryCode);
-    if (foundUser) {
-      const passwordHash =
-        await this.passwordAdapter.createPasswordHash(newPassword);
-
-      return this.usersRepository.updatePassword(passwordHash, recoveryCode);
-    }
-    return;
-  }
+  // async updatePassword(newPassword: string, recoveryCode: string) {
+  //   debugger;
+  //   const foundUser = await this.findUserByRecoveryCode(recoveryCode);
+  //   if (foundUser) {
+  //     const passwordHash =
+  //       await this.passwordAdapter.createPasswordHash(newPassword);
+  //
+  //     return this.usersRepository.updatePassword(passwordHash, recoveryCode);
+  //   }
+  //   return;
+  // }
   async emailIsExist(email: string): Promise<boolean> {
     return await this.usersRepository.emailIsExist(email);
+  }
+  async emailIsValid(email: string): Promise<boolean> {
+    return await this.usersRepository.emailIsValid(email);
   }
   async emailIsConfirmed(email: string): Promise<boolean> {
     return await this.usersRepository.emailIsConfirmed(email);

@@ -17,6 +17,11 @@ import { UsersService } from '../users/application/users.service';
 import { UsersRepository } from '../users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../users/infrastructure/users.query.repository';
 import { EmailManager } from '../adapter/email.manager';
+import { AddDeviceUseCase } from './application/use-cases/addDevice.useCase';
+import { CqrsModule } from '@nestjs/cqrs';
+import { DeleteCurrentSessionUseCase } from './application/use-cases/deleteCurrentSessionById.useCase';
+
+const useCases = [DeleteCurrentSessionUseCase, AddDeviceUseCase];
 
 @Module({
   imports: [
@@ -25,6 +30,7 @@ import { EmailManager } from '../adapter/email.manager';
       { name: User.name, schema: UserSchema },
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
+    CqrsModule,
   ],
   controllers: [SecurityDeviceController],
   providers: [
@@ -38,6 +44,7 @@ import { EmailManager } from '../adapter/email.manager';
     PasswordAdapter,
     JwtService,
     EmailManager,
+    ...useCases,
   ],
 })
 export class SecurityDeviceModule {}

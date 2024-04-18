@@ -7,6 +7,8 @@ import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.mode
 import { UsersService } from '../../users/application/users.service';
 import { UserDbType } from '../../types';
 import { ObjectId } from 'mongodb';
+import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
+import { CommandBus } from '@nestjs/cqrs';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -15,6 +17,7 @@ export class SecurityDeviceController {
     private securityDeviceService: SecurityDevicesService,
     private deviceQueryRepository: DeviceQueryRepository,
     private userService: UsersService,
+    private commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -41,8 +44,8 @@ export class SecurityDeviceController {
     @Req() req: Request & RequestWithDeviceId,
     @Param('deviceId') deviceId: string,
   ) {
-    await this.securityDeviceService.deleteCurrentSessionById(
-      new ObjectId(deviceId),
+    await this.commandBus.execute(
+      new DeleteCurrentSessionByIdCommand(new ObjectId(deviceId)),
     );
   }
 }

@@ -6,13 +6,28 @@ import {
 } from './domain/expired-token.entity';
 import { ExpiredTokenRepository } from './infrastructure/expired.token.repository';
 import { PasswordAdapter } from '../adapter/password.adapter';
+import { AddExpiredRefreshTokenUseCase } from './application/use-cases/addExpiredRefreshToken.useCase';
+import { CqrsModule } from '@nestjs/cqrs';
+import { SecurityDevicesService } from '../devices/application/security.devices.service';
+import { DeviceRepository } from '../devices/infrastructure/device.repository';
+import { Device, DeviceSchema } from '../devices/domain/devices.entity';
+
+const useCases = [AddExpiredRefreshTokenUseCase];
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+      { name: Device.name, schema: DeviceSchema },
     ]),
+    CqrsModule,
   ],
-  providers: [ExpiredTokenRepository, PasswordAdapter],
+  providers: [
+    ExpiredTokenRepository,
+    PasswordAdapter,
+    SecurityDevicesService,
+    DeviceRepository,
+    ...useCases,
+  ],
 })
 export class ExpiredTokenModule {}

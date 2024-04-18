@@ -140,6 +140,7 @@ PostSchema.statics.createPost = (
     myStatus: LikeStatus.None,
     newestLikes: [],
   };
+  console.log(post);
   return post;
 };
 
