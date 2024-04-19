@@ -29,16 +29,16 @@ export class BlogsService {
     return await this.blogsRepository.findBlogById(blogId);
   }
 
-  async createBlogByAdmin(
-    inputBlogModel: BlogCreateModel,
-  ): Promise<CreatedBlogViewModel> {
-    const createdBlog = this.BlogModel.createBlog(
-      inputBlogModel,
-      this.BlogModel,
-    );
-
-    return await this.blogsRepository.createBlogByAdmin(createdBlog);
-  }
+  // async createBlogByAdmin(
+  //   inputBlogModel: BlogCreateModel,
+  // ): Promise<CreatedBlogViewModel> {
+  //   const createdBlog = this.BlogModel.createBlog(
+  //     inputBlogModel,
+  //     this.BlogModel,
+  //   );
+  //
+  //   return await this.blogsRepository.createBlogByAdmin(createdBlog);
+  // }
 
   async updateBlogByAdmin(
     blogId: string,

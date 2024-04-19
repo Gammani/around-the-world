@@ -55,10 +55,6 @@ export class BlogsRepository {
   }
 
   async deleteBlog(blogId: string): Promise<boolean> {
-    if (!ObjectId.isValid(blogId)) {
-      return false;
-      // throw new Error('Invalid userId format');
-    }
     const result = await this.BlogModel.deleteOne({ _id: blogId });
     return result.deletedCount === 1;
   }

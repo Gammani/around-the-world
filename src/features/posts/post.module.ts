@@ -36,6 +36,11 @@ import { EmailManager } from '../adapter/email.manager';
 import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
 import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
+import { CqrsModule } from '@nestjs/cqrs';
+import { GetQueryPostsUseCase } from './application/use-cases/getQueryPosts.useCase';
+import { CreatePostByAdminWithBlogIdUseCase } from './application/use-cases/createPostByAdminWithBlogId.useCase';
+
+const useCases = [GetQueryPostsUseCase, CreatePostByAdminWithBlogIdUseCase];
 
 @Module({
   imports: [
@@ -50,6 +55,7 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
       { name: Device.name, schema: DeviceSchema },
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
+    CqrsModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -74,6 +80,7 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
     CommentsService,
     CommentsRepository,
     BasicAuthGuard,
+    ...useCases,
   ],
 })
 export class PostModule {}
