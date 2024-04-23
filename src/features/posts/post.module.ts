@@ -39,8 +39,27 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GetQueryPostsUseCase } from './application/use-cases/getQueryPosts.useCase';
 import { CreatePostByAdminWithBlogIdUseCase } from './application/use-cases/createPostByAdminWithBlogId.useCase';
+import { GetPostByIdUseCase } from './application/use-cases/getPostById.useCase';
+import { CreatePostLikeUseCase } from '../postLike/application/use-cases/createPostLike-useCase';
+import { GetPostLikeFromUserUseCase } from '../postLike/application/use-cases/getPostLikeFromUser.useCase';
+import { UpdatePostLikeStatusUseCase } from '../postLike/application/use-cases/updatePostLikeStatus.useCase';
+import { CreatePostByAdminUseCase } from './application/use-cases/createPostByAdmin.useCase';
+import { GetQueryPostByIdUseCase } from './application/use-cases/getQueryPostById.useCase';
+import { UpdatePostByAdminUseCase } from './application/use-cases/updatePostByAdmin.useCase';
+import { DeletePostByAdminUseCase } from './application/use-cases/deletePostByAdmin.useCase';
 
-const useCases = [GetQueryPostsUseCase, CreatePostByAdminWithBlogIdUseCase];
+const useCases = [
+  GetQueryPostsUseCase,
+  CreatePostByAdminWithBlogIdUseCase,
+  GetPostByIdUseCase,
+  CreatePostLikeUseCase,
+  GetPostLikeFromUserUseCase,
+  UpdatePostLikeStatusUseCase,
+  CreatePostByAdminUseCase,
+  GetQueryPostByIdUseCase,
+  UpdatePostByAdminUseCase,
+  DeletePostByAdminUseCase,
+];
 
 @Module({
   imports: [

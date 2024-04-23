@@ -63,6 +63,8 @@ PostLikeSchema.statics.createPostLike = (
   postLike.likeStatus = likeStatus;
   postLike.addedAt = new Date().toISOString();
   postLike.lastUpdate = new Date().toISOString();
+
+  return postLike;
 };
 
 export type PostLikeModelStaticType = {

@@ -23,7 +23,12 @@ import {
   UpdateInputPostModelType,
 } from './models/input/post.input.model';
 import { PostLikeModel } from './models/input/post.like.model';
-import { BlogDbType, PostDbType, PostLikeDbType } from '../../types';
+import {
+  BlogDbType,
+  PostDbType,
+  PostLikeDbType,
+  UserDbType,
+} from '../../types';
 import { CheckRefreshToken } from '../../auth/guards/jwt-auth.guard';
 import { PostLikeService } from '../../postLike/application/postLike.service';
 import { Request } from 'express';
@@ -34,6 +39,20 @@ import { CommentsWithPaginationViewModel } from '../../comments/api/models/outpu
 import { CommentInputModel } from './models/input/comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetPostByIdCommand } from '../application/use-cases/getPostById.useCase';
+import { CreatePostLikeCommand } from '../../postLike/application/use-cases/createPostLike-useCase';
+import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
+import { GetPostLikeFromUserCommand } from '../../postLike/application/use-cases/getPostLikeFromUser.useCase';
+import { UpdatePostLikeStatusCommand } from '../../postLike/application/use-cases/updatePostLikeStatus.useCase';
+import { GetQueryCommentsByPostIdCommand } from '../../comments/application/use-cases/getQueryCommentsByPostId.useCase';
+import { GetQueryPostsCommand } from '../application/use-cases/getQueryPosts.useCase';
+import { GetBlogByIdCommand } from '../../blogs/application/use-cases/getBlogById.useCase';
+import { CreatePostByAdminCommand } from '../application/use-cases/createPostByAdmin.useCase';
+import { CreateCommentCommand } from '../../comments/application/use-cases/CreateComment.useCase';
+import { GetQueryPostByIdCommand } from '../application/use-cases/getQueryPostById.useCase';
+import { UpdatePostByAdminCommand } from '../application/use-cases/updatePostByAdmin.useCase';
+import { DeletePostByAdminCommand } from '../application/use-cases/deletePostByAdmin.useCase';
 
 @Controller('posts')
 export class PostsController {
@@ -45,41 +64,48 @@ export class PostsController {
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly postLikeService: PostLikeService,
     private readonly commentService: CommentsService,
+    private commandBus: CommandBus,
   ) {}
 
   @UseGuards(CheckRefreshToken)
   @Put(':postId/like-status')
+  @HttpCode(204)
   async updatePostLikeStatus(
     @Body() postLikeModel: PostLikeModel,
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundPost: PostDbType | null =
-      await this.postService.findPostById(postId);
+    const foundPost: PostDbType | null = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
     if (foundPost) {
-      const foundUser = await this.userService.findUserByDeviceId(req.deviceId);
+      const foundUser: UserDbType | null = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(req.deviceId),
+      );
       if (foundUser) {
         const foundPostLikeFromUser: PostLikeDbType | null =
-          await this.postLikeService.findPostLike(
-            new ObjectId(postId),
-            foundUser._id,
+          await this.commandBus.execute(
+            new GetPostLikeFromUserCommand(new ObjectId(postId), foundUser._id),
           );
         if (foundPostLikeFromUser) {
-          await this.postLikeService.updatePostLikeStatus(
-            postLikeModel.likeStatus,
-            foundPostLikeFromUser,
+          await this.commandBus.execute(
+            new UpdatePostLikeStatusCommand(
+              postLikeModel.likeStatus,
+              foundPostLikeFromUser,
+            ),
           );
         } else {
-          await this.postLikeService.createPostLike(
-            foundUser._id,
-            foundUser.accountData.login,
-            foundPost,
-            postLikeModel.likeStatus,
+          await this.commandBus.execute(
+            new CreatePostLikeCommand(
+              foundUser,
+              foundPost,
+              postLikeModel.likeStatus,
+            ),
           );
         }
       }
     } else {
-      new NotFoundException();
+      throw new NotFoundException();
     }
   }
 
@@ -94,16 +120,19 @@ export class PostsController {
       sortDirection: string | undefined;
     },
   ) {
-    const foundPost: PostDbType | null =
-      await this.postService.findPostById(postId);
+    const foundPost: PostDbType | null = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
     if (foundPost) {
       const foundCommentsWithUserNoName: CommentsWithPaginationViewModel =
-        await this.commentsQueryRepository.findComments(
-          query.pageNumber,
-          query.pageSize,
-          query.sortBy,
-          query.sortDirection,
-          postId,
+        await this.commandBus.execute(
+          new GetQueryCommentsByPostIdCommand(
+            query.pageNumber,
+            query.pageSize,
+            query.sortBy,
+            query.sortDirection,
+            postId,
+          ),
         );
       return foundCommentsWithUserNoName;
     } else {
@@ -122,11 +151,13 @@ export class PostsController {
     },
   ) {
     const foundPosts: PostsWithPaginationViewModel =
-      await this.postsQueryRepository.findPosts(
-        query.pageNumber,
-        query.pageSize,
-        query.sortBy,
-        query.sortDirection,
+      await this.commandBus.execute(
+        new GetQueryPostsCommand(
+          query.pageNumber,
+          query.pageSize,
+          query.sortBy,
+          query.sortDirection,
+        ),
       );
     return foundPosts;
   }
@@ -134,13 +165,12 @@ export class PostsController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createPostByAdmin(@Body() inputPostModel: PostCreateModelWithBlogId) {
-    const foundBlog: BlogDbType | null = await this.blogService.findBlogById(
-      inputPostModel.blogId,
+    const foundBlog: BlogDbType | null = await this.commandBus.execute(
+      new GetBlogByIdCommand(inputPostModel.blogId),
     );
     if (foundBlog) {
-      return await this.postService.createPostByAdmin(
-        inputPostModel,
-        foundBlog.name,
+      return await this.commandBus.execute(
+        new CreatePostByAdminCommand(inputPostModel, foundBlog),
       );
     } else {
       throw new NotFoundException();
@@ -154,15 +184,16 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundPost: PostDbType | null =
-      await this.postService.findPostById(postId);
+    const foundPost: PostDbType | null = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
     if (foundPost) {
-      const foundUser = await this.userService.findUserByDeviceId(req.deviceId);
+      const foundUser: UserDbType = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(req.deviceId),
+      );
       if (foundUser) {
-        return await this.commentService.createComment(
-          inputCommentModel.content,
-          foundUser,
-          foundPost,
+        return await this.commandBus.execute(
+          new CreateCommentCommand(inputCommentModel, foundUser, foundPost),
         );
       } else {
         throw new UnauthorizedException();
@@ -174,9 +205,11 @@ export class PostsController {
 
   @Get(':id')
   async findPostById(@Param('id') postId: string) {
-    const foundPost = await this.postService.findPostById(postId);
+    const foundPost = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
     if (foundPost) {
-      return await this.postsQueryRepository.findPostById(postId);
+      return await this.commandBus.execute(new GetQueryPostByIdCommand(postId));
     } else {
       throw new NotFoundException();
     }
@@ -189,9 +222,13 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() inputPostModel: UpdateInputPostModelType,
   ) {
-    const foundPost = await this.postService.findPostById(postId);
+    const foundPost = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
     if (foundPost) {
-      await this.postService.updatePostByAdmin(postId, inputPostModel);
+      await this.commandBus.execute(
+        new UpdatePostByAdminCommand(postId, inputPostModel),
+      );
     } else {
       throw new NotFoundException();
     }
@@ -201,9 +238,11 @@ export class PostsController {
   @Delete(':id')
   @HttpCode(204)
   async removePostByAdmin(@Param('id') postId: string) {
-    const foundPost = await this.postService.findPostById(postId);
+    const foundPost = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
     if (foundPost) {
-      await this.postService.removePostByAdmin(postId);
+      await this.commandBus.execute(new DeletePostByAdminCommand(postId));
     } else {
       throw new NotFoundException();
     }

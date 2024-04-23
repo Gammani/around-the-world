@@ -46,9 +46,28 @@ export class PostCreateModelWithBlogId {
   @Length(24, 24)
   blogId: string;
 }
-export type UpdateInputPostModelType = {
+export class UpdateInputPostModelType {
+  @Trim()
+  @IsString()
+  @Length(1, 30)
+  @IsNotEmpty()
   title: string;
+
+  @Trim()
+  @IsString()
+  @Length(1, 100)
+  @IsNotEmpty()
   shortDescription: string;
+
+  @Trim()
+  @IsString()
+  @Length(1, 1000)
+  @IsNotEmpty()
   content: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @BlogIdIsExist()
+  @Length(24, 24)
   blogId: string;
-};
+}

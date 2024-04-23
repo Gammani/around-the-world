@@ -32,6 +32,8 @@ export class PostLikeRepository {
   }
 
   async createPostLike(createdPostLikeDto: any) {
+    debugger;
+    console.log(createdPostLikeDto);
     await createdPostLikeDto.save();
     return;
   }

@@ -19,8 +19,13 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
 import { GetUserViewModelByDeviceIdUseCase } from './application/use-cases/getUserViewModelByDeviceId.useCase';
 import { CreateUserUserCase } from './application/use-cases/createUser.useCase';
 import { CqrsModule } from '@nestjs/cqrs';
+import { GetUserByDeviceIdUseCase } from './application/use-cases/getUserByDeviceId.useCase';
 
-const useCases = [CreateUserUserCase, GetUserViewModelByDeviceIdUseCase];
+const useCases = [
+  CreateUserUserCase,
+  GetUserViewModelByDeviceIdUseCase,
+  GetUserByDeviceIdUseCase,
+];
 
 @Module({
   imports: [

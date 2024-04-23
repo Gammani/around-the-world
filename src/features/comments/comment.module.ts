@@ -26,6 +26,11 @@ import {
 } from '../commentLike/domain/commentLike.entity';
 import { CommentLikeService } from '../commentLike/appliacation/commentLike.service';
 import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike.repository';
+import { GetQueryCommentsByPostIdUseCase } from './application/use-cases/getQueryCommentsByPostId.useCase';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreateCommentUseCase } from './application/use-cases/CreateComment.useCase';
+
+const useCases = [GetQueryCommentsByPostIdUseCase, CreateCommentUseCase];
 
 @Module({
   imports: [
@@ -36,6 +41,7 @@ import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
       { name: CommentLike.name, schema: CommentLikeSchema },
     ]),
+    CqrsModule,
   ],
   controllers: [CommentsController],
   providers: [
@@ -53,6 +59,7 @@ import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike
     SecurityDevicesService,
     DeviceRepository,
     ExpiredTokenRepository,
+    ...useCases,
   ],
 })
 export class CommentModule {}
