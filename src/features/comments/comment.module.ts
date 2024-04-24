@@ -29,8 +29,25 @@ import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike
 import { GetQueryCommentsByPostIdUseCase } from './application/use-cases/getQueryCommentsByPostId.useCase';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateCommentUseCase } from './application/use-cases/CreateComment.useCase';
+import { GetCommentByIdUseCase } from './application/use-cases/getCommentById.useCase';
+import { GetQueryCommentByIdUseCase } from './application/use-cases/getQueryCommentById.useCase';
+import { UpdateCommentUseCase } from './application/use-cases/updateComment.useCase';
+import { DeleteCommentByIdUseCase } from './application/use-cases/deleteCommentById.useCase';
+import { GetCommentLikeUseCase } from '../commentLike/appliacation/use-cases/getCommentLike.useCase';
+import { UpdateCommentLikeUseCase } from '../commentLike/appliacation/use-cases/updateCommentLike.useCase';
+import { CreateCommentLikeUseCase } from '../commentLike/appliacation/use-cases/createCommentLike.useCase';
 
-const useCases = [GetQueryCommentsByPostIdUseCase, CreateCommentUseCase];
+const useCases = [
+  GetQueryCommentsByPostIdUseCase,
+  CreateCommentUseCase,
+  GetCommentByIdUseCase,
+  GetQueryCommentByIdUseCase,
+  UpdateCommentUseCase,
+  DeleteCommentByIdUseCase,
+  GetCommentLikeUseCase,
+  UpdateCommentLikeUseCase,
+  CreateCommentLikeUseCase,
+];
 
 @Module({
   imports: [

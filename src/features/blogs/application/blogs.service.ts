@@ -8,11 +8,6 @@ import {
 import { Model } from 'mongoose';
 import { BlogsRepository } from '../infrastructure/blogs.repository';
 import { PostsRepository } from '../../posts/infrastructure/posts.repository';
-import { CreatedBlogViewModel } from '../api/models/output/blog.output.model';
-import {
-  BlogCreateModel,
-  BlogUpdateModel,
-} from '../api/models/input/blog.input.model';
 import { BlogDbType } from '../../types';
 
 @Injectable()
@@ -27,25 +22,6 @@ export class BlogsService {
 
   async findBlogById(blogId: string): Promise<BlogDbType | null> {
     return await this.blogsRepository.findBlogById(blogId);
-  }
-
-  // async createBlogByAdmin(
-  //   inputBlogModel: BlogCreateModel,
-  // ): Promise<CreatedBlogViewModel> {
-  //   const createdBlog = this.BlogModel.createBlog(
-  //     inputBlogModel,
-  //     this.BlogModel,
-  //   );
-  //
-  //   return await this.blogsRepository.createBlogByAdmin(createdBlog);
-  // }
-
-  async updateBlogByAdmin(
-    blogId: string,
-    inputBlogModel: BlogUpdateModel,
-  ): Promise<boolean> {
-    // логика
-    return await this.blogsRepository.updateBlogByAdmin(blogId, inputBlogModel);
   }
 
   async removeBlogByAdmin(blogId: string): Promise<boolean> {

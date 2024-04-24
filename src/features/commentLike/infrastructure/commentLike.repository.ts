@@ -32,6 +32,8 @@ export class CommentLikeRepository {
   }
 
   async createCommentLike(createdCommentLikeDto: any) {
+    debugger;
+    console.log(createdCommentLikeDto);
     await createdCommentLikeDto.save();
     return;
   }

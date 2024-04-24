@@ -69,6 +69,8 @@ CommentLikeSchema.statics.createCommentLike = (
   commentLike.likeStatus = likeStatus;
   commentLike.addedAt = new Date().toISOString();
   commentLike.lastUpdate = new Date().toISOString();
+
+  return commentLike;
 };
 
 export type CommentLikeModelStaticType = {

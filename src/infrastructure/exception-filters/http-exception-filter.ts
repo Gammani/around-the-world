@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { json, Request, Response } from 'express';
 
 //docs.nestjs.com/exception-filters
 @Catch(HttpException)
@@ -36,6 +36,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
     } else if (status === HttpStatus.NOT_FOUND) {
       response.status(status).json(exception.message);
     } else if (status === HttpStatus.TOO_MANY_REQUESTS) {
+      response.status(status).json(exception.message);
+    } else if (status === HttpStatus.FORBIDDEN) {
       response.status(status).json(exception.message);
     } else {
       response.status(status).json({

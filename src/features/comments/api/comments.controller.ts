@@ -4,6 +4,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Put,
@@ -20,10 +21,18 @@ import { CommentsQueryRepository } from '../infrastructure/comments.query.reposi
 import { CheckRefreshToken } from '../../auth/guards/jwt-auth.guard';
 import { CommentInputModel } from '../../posts/api/models/input/comment.input.model';
 import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
-import { ObjectId } from 'mongodb';
 import { CommentLikeModel } from './models/input/comment.like.model';
 import { CommentLikeService } from '../../commentLike/appliacation/commentLike.service';
 import { CheckDeviceId } from './models/input/comment.input.model';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetCommentByIdCommand } from '../application/use-cases/getCommentById.useCase';
+import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
+import { GetQueryCommentByIdCommand } from '../application/use-cases/getQueryCommentById.useCase';
+import { UpdateCommentCommand } from '../application/use-cases/updateComment.useCase';
+import { DeleteCommentByIdCommand } from '../application/use-cases/deleteCommentById.useCase';
+import { GetCommentLikeCommand } from '../../commentLike/appliacation/use-cases/getCommentLike.useCase';
+import { UpdateCommentLikeCommand } from '../../commentLike/appliacation/use-cases/updateCommentLike.useCase';
+import { CreateCommentLikeCommand } from '../../commentLike/appliacation/use-cases/createCommentLike.useCase';
 
 @Controller('comments')
 export class CommentsController {
@@ -32,6 +41,7 @@ export class CommentsController {
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commentLikeService: CommentLikeService,
     private readonly userService: UsersService,
+    private commandBus: CommandBus,
   ) {}
 
   @UseGuards(CheckToken)
@@ -41,18 +51,21 @@ export class CommentsController {
     @Req() req: Request & CheckDeviceId,
   ) {
     debugger;
-    const foundComment: CommentDbType | null =
-      await this.commentsService.findCommentById(commentId);
+    const foundComment: CommentDbType | null = await this.commandBus.execute(
+      new GetCommentByIdCommand(commentId),
+    );
     if (foundComment) {
       if (req.deviceId) {
-        const foundUser: UserDbType | null =
-          await this.userService.findUserByDeviceId(req.deviceId);
-        return await this.commentsQueryRepository.findCommentById(
-          commentId,
-          foundUser?._id,
+        const foundUser: UserDbType | null = await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(req.deviceId),
+        );
+        return await this.commandBus.execute(
+          new GetQueryCommentByIdCommand(commentId, foundUser?._id),
         );
       } else {
-        return await this.commentsQueryRepository.findCommentById(commentId);
+        return await this.commandBus.execute(
+          new GetQueryCommentByIdCommand(commentId),
+        );
       }
     } else {
       throw new NotFoundException();
@@ -61,24 +74,27 @@ export class CommentsController {
 
   @UseGuards(CheckRefreshToken)
   @Put(':commentId')
+  @HttpCode(204)
   async updateCommentById(
     @Body() inputCommentModel: CommentInputModel,
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundComment: CommentDbType | null =
-      await this.commentsService.findCommentById(commentId);
+    const foundComment: CommentDbType | null = await this.commandBus.execute(
+      new GetCommentByIdCommand(commentId),
+    );
 
     if (foundComment) {
-      const foundUser: UserDbType | null =
-        await this.userService.findUserByDeviceId(req.deviceId);
+      const foundUser: UserDbType | null = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(req.deviceId),
+      );
       if (
         foundUser &&
-        new ObjectId(foundComment.commentatorInfo.userId) === foundUser._id
+        foundComment.commentatorInfo.userId.toString() ===
+          foundUser._id.toString()
       ) {
-        await this.commentsService.updateComment(
-          commentId,
-          inputCommentModel.content,
+        await this.commandBus.execute(
+          new UpdateCommentCommand(commentId, inputCommentModel.content),
         );
       } else {
         throw new ForbiddenException();
@@ -94,16 +110,19 @@ export class CommentsController {
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundComment: CommentDbType | null =
-      await this.commentsService.findCommentById(commentId);
+    const foundComment: CommentDbType | null = await this.commandBus.execute(
+      new GetCommentByIdCommand(commentId),
+    );
     if (foundComment) {
-      const foundUser: UserDbType | null =
-        await this.userService.findUserByDeviceId(req.deviceId);
+      const foundUser: UserDbType | null = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(req.deviceId),
+      );
       if (
         foundUser &&
-        foundUser._id === new ObjectId(foundComment.commentatorInfo.userId)
+        foundUser._id.toString() ===
+          foundComment.commentatorInfo.userId.toString()
       ) {
-        await this.commentsService.deleteComment(commentId);
+        await this.commandBus.execute(new DeleteCommentByIdCommand(commentId));
       } else {
         throw new ForbiddenException();
       }
@@ -119,28 +138,33 @@ export class CommentsController {
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundComment: CommentDbType | null =
-      await this.commentsService.findCommentById(commentId);
+    const foundComment: CommentDbType | null = await this.commandBus.execute(
+      new GetCommentByIdCommand(commentId),
+    );
     if (foundComment) {
-      const foundUser: UserDbType | null =
-        await this.userService.findUserByDeviceId(req.deviceId);
+      const foundUser: UserDbType | null = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(req.deviceId),
+      );
       if (foundUser) {
         const foundCommentLikeFromUser: CommentLikeDbType | null =
-          await this.commentLikeService.findCommentLike(
-            foundComment._id,
-            foundUser._id,
+          await this.commandBus.execute(
+            new GetCommentLikeCommand(foundComment._id, foundUser._id),
           );
         if (foundCommentLikeFromUser) {
-          await this.commentLikeService.updateCommentLikeStatus(
-            commentLikeModel.likeStatus,
-            foundCommentLikeFromUser,
+          await this.commandBus.execute(
+            new UpdateCommentLikeCommand(
+              commentLikeModel.likeStatus,
+              foundCommentLikeFromUser,
+            ),
           );
         } else {
-          await this.commentLikeService.createCommentLike(
-            foundComment,
-            commentLikeModel.likeStatus,
-            foundUser._id,
-            foundUser.accountData.login,
+          await this.commandBus.execute(
+            new CreateCommentLikeCommand(
+              foundComment,
+              commentLikeModel.likeStatus,
+              foundUser._id,
+              foundUser.accountData.login,
+            ),
           );
         }
       }
