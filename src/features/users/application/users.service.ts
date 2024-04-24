@@ -1,46 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreatedUserViewModel } from '../api/models/output/user.output.model';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserModelStaticType } from '../domain/user.entity';
 import { Model } from 'mongoose';
 import { PasswordAdapter } from '../../adapter/password.adapter';
-import { UserCreateModel } from '../api/models/input/create-user.input.model';
-import { EmailManager } from '../../adapter/email.manager';
 import { UserDbType } from '../../types';
 import { ObjectId } from 'mongodb';
 import { SecurityDevicesService } from '../../devices/application/security.devices.service';
-import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
     protected passwordAdapter: PasswordAdapter,
     protected usersRepository: UsersRepository,
-    protected usersQueryRepository: UsersQueryRepository,
-    protected emailManager: EmailManager,
     protected securityDevicesService: SecurityDevicesService,
     @InjectModel(User.name)
     private UserModel: Model<UserDocument> & UserModelStaticType,
   ) {}
 
-  async createUserByAdmin(
-    inputUserModel: UserCreateModel,
-  ): Promise<CreatedUserViewModel> {
-    const passwordHash = await this.passwordAdapter.createPasswordHash(
-      inputUserModel.password,
-    );
-    const createdUser = this.UserModel.createUser(
-      inputUserModel,
-      passwordHash,
-      this.UserModel,
-      true,
-    );
-    return await this.usersRepository.createUser(createdUser);
-  }
-  async findUserById(userId: string): Promise<UserDbType | null> {
-    return this.usersRepository.findUserById(userId);
-  }
   async findUserByDeviceId(deviceId: ObjectId): Promise<UserDbType | null> {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
@@ -86,8 +63,5 @@ export class UsersService {
   }
   async emailIsConfirmed(email: string): Promise<boolean> {
     return await this.usersRepository.emailIsConfirmed(email);
-  }
-  async removeUserByAdmin(userId: string): Promise<boolean> {
-    return await this.usersRepository.deleteUser(userId);
   }
 }

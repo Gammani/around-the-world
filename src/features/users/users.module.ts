@@ -20,11 +20,19 @@ import { GetUserViewModelByDeviceIdUseCase } from './application/use-cases/getUs
 import { CreateUserUserCase } from './application/use-cases/createUser.useCase';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GetUserByDeviceIdUseCase } from './application/use-cases/getUserByDeviceId.useCase';
+import { GetAllQueryUsersUseCase } from './application/use-cases/getAllQueryUsers.useCase';
+import { GetUserByIdUseCase } from './application/use-cases/getUserById.useCase';
+import { CreateUserByAdminUseCase } from './application/use-cases/createUserByAdmin.useCase';
+import { DeleteUserByAdminUseCase } from './application/use-cases/deleteUserByAdmin.useCase';
 
 const useCases = [
   CreateUserUserCase,
   GetUserViewModelByDeviceIdUseCase,
   GetUserByDeviceIdUseCase,
+  GetAllQueryUsersUseCase,
+  GetUserByIdUseCase,
+  CreateUserByAdminUseCase,
+  DeleteUserByAdminUseCase,
 ];
 
 @Module({
