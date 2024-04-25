@@ -156,7 +156,7 @@ export class PostsQueryRepository {
 
   async findPostById(
     postId: string,
-    userId?: string,
+    userId?: ObjectId | null | undefined,
   ): Promise<PostViewModel | null> {
     if (!ObjectId.isValid(postId)) {
       throw new NotFoundException();

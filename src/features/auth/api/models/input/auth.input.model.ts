@@ -22,3 +22,7 @@ export interface RequestWithDeviceId extends Request {
   deviceId: ObjectId;
   cookies?: string;
 }
+
+export interface RequestWithUserId extends Request {
+  user?: { userId: ObjectId | null | undefined };
+}

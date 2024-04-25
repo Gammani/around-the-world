@@ -1,10 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsQueryRepository } from '../../infrastructure/posts.query.repository';
+import { ObjectId } from 'mongodb';
 
 export class GetQueryPostByIdCommand {
   constructor(
     public postId: string,
-    // public userId?: string,
+    public userId?: ObjectId | null | undefined,
   ) {}
 }
 
@@ -15,6 +16,9 @@ export class GetQueryPostByIdUseCase
   constructor(private readonly postsQueryRepository: PostsQueryRepository) {}
 
   async execute(command: GetQueryPostByIdCommand) {
-    return await this.postsQueryRepository.findPostById(command.postId);
+    return await this.postsQueryRepository.findPostById(
+      command.postId,
+      command.userId,
+    );
   }
 }

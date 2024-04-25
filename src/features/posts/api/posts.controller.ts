@@ -31,7 +31,10 @@ import {
 } from '../../types';
 import { PostLikeService } from '../../postLike/application/postLike.service';
 import { Request } from 'express';
-import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
+import {
+  RequestWithDeviceId,
+  RequestWithUserId,
+} from '../../auth/api/models/input/auth.input.model';
 import { UsersService } from '../../users/application/users.service';
 import { ObjectId } from 'mongodb';
 import { CommentsWithPaginationViewModel } from '../../comments/api/models/output/comment-output.model';
@@ -204,12 +207,19 @@ export class PostsController {
   }
 
   @Get(':id')
-  async findPostById(@Param('id') postId: string) {
+  async findPostById(
+    @Param('id') postId: string,
+    @Req() req: Request & RequestWithUserId,
+  ) {
+    console.log('userId = ', req.user?.userId);
+    debugger;
     const foundPost = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {
-      return await this.commandBus.execute(new GetQueryPostByIdCommand(postId));
+      return await this.commandBus.execute(
+        new GetQueryPostByIdCommand(postId, req.user?.userId),
+      );
     } else {
       throw new NotFoundException();
     }
