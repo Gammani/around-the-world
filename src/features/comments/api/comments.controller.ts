@@ -18,7 +18,6 @@ import { CommentDbType, CommentLikeDbType, UserDbType } from '../../types';
 import { CommentsService } from '../application/comments.service';
 import { UsersService } from '../../users/application/users.service';
 import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
-import { CheckRefreshToken } from '../../auth/guards/jwt-auth.guard';
 import { CommentInputModel } from '../../posts/api/models/input/comment.input.model';
 import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
 import { CommentLikeModel } from './models/input/comment.like.model';
@@ -33,6 +32,7 @@ import { DeleteCommentByIdCommand } from '../application/use-cases/deleteComment
 import { GetCommentLikeCommand } from '../../commentLike/appliacation/use-cases/getCommentLike.useCase';
 import { UpdateCommentLikeCommand } from '../../commentLike/appliacation/use-cases/updateCommentLike.useCase';
 import { CreateCommentLikeCommand } from '../../commentLike/appliacation/use-cases/createCommentLike.useCase';
+import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 
 @Controller('comments')
 export class CommentsController {
@@ -72,7 +72,7 @@ export class CommentsController {
     }
   }
 
-  @UseGuards(CheckRefreshToken)
+  @UseGuards(CheckAccessToken)
   @Put(':commentId')
   @HttpCode(204)
   async updateCommentById(
@@ -104,7 +104,7 @@ export class CommentsController {
     }
   }
 
-  @UseGuards(CheckRefreshToken)
+  @UseGuards(CheckAccessToken)
   @Delete(':commentId')
   async removeCommentById(
     @Param('commentId') commentId: string,
@@ -131,7 +131,7 @@ export class CommentsController {
     }
   }
 
-  @UseGuards(CheckRefreshToken)
+  @UseGuards(CheckAccessToken)
   @Put(':commentId/like-status')
   async updateCommentLikeStatus(
     @Body() commentLikeModel: CommentLikeModel,

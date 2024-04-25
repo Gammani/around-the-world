@@ -30,6 +30,9 @@ export class JwtService {
     );
   }
   async verifyRefreshToken(refreshToken: string) {
-    return await this.passwordAdapter.jwtVerify(refreshToken);
+    return await this.passwordAdapter.jwtRefreshTokenVerify(refreshToken);
+  }
+  async verifyAccessToken(accessToken: string) {
+    return await this.passwordAdapter.jwtAccessTokenVerify(accessToken);
   }
 }

@@ -23,7 +23,8 @@ export class ExpiredTokenRepository {
   }
   async isExpiredToken(refreshToken: string): Promise<boolean> {
     try {
-      const result: any = await this.passwordAdapter.jwtVerify(refreshToken);
+      const result: any =
+        await this.passwordAdapter.jwtRefreshTokenVerify(refreshToken);
       return false;
     } catch (error: any) {
       console.log(error.message);

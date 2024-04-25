@@ -29,7 +29,6 @@ import {
   PostLikeDbType,
   UserDbType,
 } from '../../types';
-import { CheckRefreshToken } from '../../auth/guards/jwt-auth.guard';
 import { PostLikeService } from '../../postLike/application/postLike.service';
 import { Request } from 'express';
 import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
@@ -53,6 +52,7 @@ import { CreateCommentCommand } from '../../comments/application/use-cases/Creat
 import { GetQueryPostByIdCommand } from '../application/use-cases/getQueryPostById.useCase';
 import { UpdatePostByAdminCommand } from '../application/use-cases/updatePostByAdmin.useCase';
 import { DeletePostByAdminCommand } from '../application/use-cases/deletePostByAdmin.useCase';
+import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -67,7 +67,7 @@ export class PostsController {
     private commandBus: CommandBus,
   ) {}
 
-  @UseGuards(CheckRefreshToken)
+  @UseGuards(CheckAccessToken)
   @Put(':postId/like-status')
   @HttpCode(204)
   async updatePostLikeStatus(
@@ -177,7 +177,7 @@ export class PostsController {
     }
   }
 
-  @UseGuards(CheckRefreshToken)
+  @UseGuards(CheckAccessToken)
   @Post(':postId/comments')
   async createCommentByPostId(
     @Body() inputCommentModel: CommentInputModel,

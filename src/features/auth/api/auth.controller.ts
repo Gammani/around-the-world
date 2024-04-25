@@ -27,7 +27,6 @@ import { SecurityDevicesService } from '../../devices/application/security.devic
 import { JwtService } from '../application/jwt.service';
 import { EmailInputModel } from './models/input/email.input.model';
 import { NewPasswordModel } from './models/input/new.password.model';
-import { CheckRefreshToken } from '../guards/jwt-auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../users/application/use-cases/createUser.useCase';
 import { ConfirmEmailCommand } from '../application/use-cases/confirmEmail.useCase';
@@ -38,6 +37,7 @@ import { AddDeviceCommand } from '../../devices/application/use-cases/addDevice.
 import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
 import { DeleteCurrentSessionByIdCommand } from '../../devices/application/use-cases/deleteCurrentSessionById.useCase';
 import { GetUserViewModelByDeviceIdCommand } from '../../users/application/use-cases/getUserViewModelByDeviceId.useCase';
+import { CheckRefreshToken } from '../guards/jwt-refreshToken.guard';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -96,7 +96,7 @@ export class AuthController {
     const accessToken = await this.jwtService.createAccessJWT(device._id);
     const refreshToken = await this.jwtService.createRefreshJWT(device._id);
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: true,
     });
     return { accessToken: accessToken };
@@ -115,7 +115,7 @@ export class AuthController {
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
     const refreshToken = await this.jwtService.createRefreshJWT(req.deviceId);
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: true,
     });
     return { accessToken: accessToken };
@@ -137,7 +137,7 @@ export class AuthController {
     await this.commandBus.execute(
       new DeleteCurrentSessionByIdCommand(req.deviceId),
     );
-    res.cookie('refreshToken', '', { httpOnly: false, secure: true });
+    res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }
 
   @UseGuards(CheckRefreshToken)

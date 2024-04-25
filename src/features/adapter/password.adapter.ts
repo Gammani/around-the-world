@@ -18,12 +18,28 @@ export class PasswordAdapter {
     const isEqual = await bcrypt.compare(password, hash);
     return isEqual;
   }
-  async jwtVerify(refreshToken: string): Promise<TokenPayloadType | null> {
+  async jwtRefreshTokenVerify(
+    refreshToken: string,
+  ): Promise<TokenPayloadType | null> {
     debugger;
     try {
       return jwt.verify(
         refreshToken,
         this.configService.get('JWT_REFRESH_SECRET') as Secret,
+      ) as TokenPayloadType;
+    } catch (error: any) {
+      console.log(error);
+      return null;
+    }
+  }
+  async jwtAccessTokenVerify(
+    accessToken: string,
+  ): Promise<TokenPayloadType | null> {
+    debugger;
+    try {
+      return jwt.verify(
+        accessToken,
+        this.configService.get('JWT_ACCESS_SECRET') as Secret,
       ) as TokenPayloadType;
     } catch (error: any) {
       console.log(error);

@@ -1,6 +1,5 @@
 import { SecurityDevicesService } from '../application/security.devices.service';
 import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
-import { CheckRefreshToken } from '../../auth/guards/jwt-auth.guard';
 import { DeviceQueryRepository } from '../infrastructure/device.query.repository';
 import { Request } from 'express';
 import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
@@ -9,8 +8,9 @@ import { UserDbType } from '../../types';
 import { ObjectId } from 'mongodb';
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
+import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 
-@UseGuards(CheckRefreshToken)
+@UseGuards(CheckAccessToken)
 @Controller('security/devices')
 export class SecurityDeviceController {
   constructor(
