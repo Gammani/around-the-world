@@ -23,6 +23,7 @@ export class AuthService {
     loginOrEmail: string,
     pass: string,
   ): Promise<ObjectId | null> {
+    debugger;
     const user: UserDbType | null = await this.userService.checkCredentials(
       loginOrEmail,
       pass,

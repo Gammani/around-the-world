@@ -92,6 +92,7 @@ export class AuthController {
     const device = await this.commandBus.execute(
       new AddDeviceCommand(req.user, ip, deviceName),
     );
+    debugger;
     const accessToken = await this.jwtService.createAccessJWT(device._id);
     const refreshToken = await this.jwtService.createRefreshJWT(device._id);
     res.cookie('refreshToken', refreshToken, {
