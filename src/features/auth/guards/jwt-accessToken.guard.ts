@@ -22,7 +22,7 @@ export class CheckAccessToken {
     debugger;
     const req = context.switchToHttp().getRequest();
 
-    const accessToken = req.rawHeaders[1].split(' ')[1];
+    const accessToken = req.headers.authorization?.split(' ')[1];
 
     const foundDeviceIdByAccessToken: TokenPayloadType | null =
       await this.jwtService.verifyAccessToken(accessToken);
