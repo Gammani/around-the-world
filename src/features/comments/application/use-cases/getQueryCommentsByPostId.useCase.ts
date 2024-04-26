@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsWithPaginationViewModel } from '../../api/models/output/comment-output.model';
 import { CommentsQueryRepository } from '../../infrastructure/comments.query.repository';
+import { ObjectId } from 'mongodb';
 
 export class GetQueryCommentsByPostIdCommand {
   constructor(
@@ -9,7 +10,7 @@ export class GetQueryCommentsByPostIdCommand {
     public sortBy: string | undefined,
     public sortDirection: string | undefined,
     public postId: string,
-    public userId?: string,
+    public userId?: ObjectId | null | undefined,
   ) {}
 }
 
@@ -28,6 +29,7 @@ export class GetQueryCommentsByPostIdUseCase
       command.sortBy,
       command.sortDirection,
       command.postId,
+      command.userId,
     );
   }
 }

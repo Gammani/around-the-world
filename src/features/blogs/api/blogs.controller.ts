@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
@@ -32,6 +33,8 @@ import { GetQueryPostsCommand } from '../../posts/application/use-cases/getQuery
 import { CreatePostByAdminWithBlogIdCommand } from '../../posts/application/use-cases/createPostByAdminWithBlogId.useCase';
 import { GetQueryBlogByIdCommand } from '../application/use-cases/getQueryBlogById.useCase';
 import { UpdateBlogByAdminCommand } from '../application/use-cases/updateBlogByAdmin.useCase';
+import { Request } from 'express';
+import { RequestWithUserId } from '../../auth/api/models/input/auth.input.model';
 
 @Controller('blogs')
 export class BlogsController {
@@ -78,6 +81,7 @@ export class BlogsController {
   @Get(':blogId/posts')
   async getPostsByBlogId(
     @Param('blogId') blogId: string,
+    @Req() req: Request & RequestWithUserId,
     @Query()
     query: {
       pageNumber: string | undefined;
@@ -85,7 +89,6 @@ export class BlogsController {
       sortBy: string | undefined;
       sortDirection: string | undefined;
     },
-    @Body() userId?: string,
   ) {
     const foundBlogById = await this.commandBus.execute(
       new GetBlogByIdCommand(blogId),
@@ -98,7 +101,7 @@ export class BlogsController {
             query.pageSize,
             query.sortBy,
             query.sortDirection,
-            userId,
+            req.user?.userId,
             blogId,
           ),
         );

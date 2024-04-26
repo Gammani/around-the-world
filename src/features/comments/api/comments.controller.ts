@@ -11,7 +11,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { CheckToken } from '../../../infrastructure/decorators/validate/checkToken';
 import { Request } from 'express';
 
 import { CommentDbType, CommentLikeDbType, UserDbType } from '../../types';
@@ -19,10 +18,12 @@ import { CommentsService } from '../application/comments.service';
 import { UsersService } from '../../users/application/users.service';
 import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
 import { CommentInputModel } from '../../posts/api/models/input/comment.input.model';
-import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
+import {
+  RequestWithDeviceId,
+  RequestWithUserId,
+} from '../../auth/api/models/input/auth.input.model';
 import { CommentLikeModel } from './models/input/comment.like.model';
 import { CommentLikeService } from '../../commentLike/appliacation/commentLike.service';
-import { CheckDeviceId } from './models/input/comment.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetCommentByIdCommand } from '../application/use-cases/getCommentById.useCase';
 import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
@@ -44,23 +45,47 @@ export class CommentsController {
     private commandBus: CommandBus,
   ) {}
 
-  @UseGuards(CheckToken)
+  // @UseGuards(CheckToken)
+  // @Get(':id')
+  // async getCommentById(
+  //   @Param('id') commentId: string,
+  //   @Req() req: Request & CheckDeviceId,
+  // ) {
+  //   debugger;
+  //   const foundComment: CommentDbType | null = await this.commandBus.execute(
+  //     new GetCommentByIdCommand(commentId),
+  //   );
+  //   if (foundComment) {
+  //     if (req.deviceId) {
+  //       const foundUser: UserDbType | null = await this.commandBus.execute(
+  //         new GetUserByDeviceIdCommand(req.deviceId),
+  //       );
+  //       return await this.commandBus.execute(
+  //         new GetQueryCommentByIdCommand(commentId, foundUser?._id),
+  //       );
+  //     } else {
+  //       return await this.commandBus.execute(
+  //         new GetQueryCommentByIdCommand(commentId),
+  //       );
+  //     }
+  //   } else {
+  //     throw new NotFoundException();
+  //   }
+  // }
+  @UseGuards(CheckAccessToken)
   @Get(':id')
   async getCommentById(
     @Param('id') commentId: string,
-    @Req() req: Request & CheckDeviceId,
+    @Req() req: Request & RequestWithUserId,
   ) {
     debugger;
     const foundComment: CommentDbType | null = await this.commandBus.execute(
       new GetCommentByIdCommand(commentId),
     );
     if (foundComment) {
-      if (req.deviceId) {
-        const foundUser: UserDbType | null = await this.commandBus.execute(
-          new GetUserByDeviceIdCommand(req.deviceId),
-        );
+      if (req.user?.userId) {
         return await this.commandBus.execute(
-          new GetQueryCommentByIdCommand(commentId, foundUser?._id),
+          new GetQueryCommentByIdCommand(commentId, req.user?.userId),
         );
       } else {
         return await this.commandBus.execute(

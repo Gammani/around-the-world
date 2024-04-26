@@ -26,7 +26,7 @@ export class PostsQueryRepository {
     pageSizeQuery: string | undefined,
     sortByQuery: string | undefined,
     sortDirectionQuery: string | undefined,
-    userId?: string,
+    userId?: ObjectId | null | undefined,
     blogId?: string,
   ): Promise<PostsWithPaginationViewModel> {
     const pageNumber = isNaN(Number(pageNumberQuery))
@@ -95,7 +95,7 @@ export class PostsQueryRepository {
 
   async getExtendedLikesInfo(
     post: PostDocument,
-    userId?: string,
+    userId?: ObjectId | null | undefined,
   ): Promise<customFilteredPostLikesType | undefined> {
     try {
       let myStatus: PostLikeDocument | null = null;

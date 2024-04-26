@@ -115,6 +115,7 @@ export class PostsController {
   @Get(':postId/comments')
   async getCommentsByPostId(
     @Param('postId') postId: string,
+    @Req() req: Request & RequestWithUserId,
     @Query()
     query: {
       pageNumber: string | undefined;
@@ -135,6 +136,7 @@ export class PostsController {
             query.sortBy,
             query.sortDirection,
             postId,
+            req.user?.userId,
           ),
         );
       return foundCommentsWithUserNoName;
@@ -145,6 +147,7 @@ export class PostsController {
 
   @Get()
   async getAllPosts(
+    @Req() req: Request & RequestWithUserId,
     @Query()
     query: {
       pageNumber: string | undefined;
@@ -160,6 +163,7 @@ export class PostsController {
           query.pageSize,
           query.sortBy,
           query.sortDirection,
+          req.user?.userId,
         ),
       );
     return foundPosts;
@@ -211,8 +215,6 @@ export class PostsController {
     @Param('id') postId: string,
     @Req() req: Request & RequestWithUserId,
   ) {
-    console.log('userId = ', req.user?.userId);
-    debugger;
     const foundPost = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );

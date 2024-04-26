@@ -66,7 +66,7 @@ export class CommentsQueryRepository {
     sortByQuery: string | undefined,
     sortDirectionQuery: string | undefined,
     postId: string,
-    userId?: string,
+    userId?: ObjectId | null | undefined,
   ): Promise<CommentsWithPaginationViewModel> {
     const pageNumber = isNaN(Number(pageNumberQuery))
       ? 1
@@ -114,7 +114,10 @@ export class CommentsQueryRepository {
     };
   }
 
-  async getLikeInfo(comment: CommentDocument, userId?: string) {
+  async getLikeInfo(
+    comment: CommentDocument,
+    userId?: ObjectId | null | undefined,
+  ) {
     let myStatus: CommentLikeDocument | null = null;
 
     if (userId) {
