@@ -38,6 +38,7 @@ import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/us
 import { DeleteCurrentSessionByIdCommand } from '../../devices/application/use-cases/deleteCurrentSessionById.useCase';
 import { GetUserViewModelByDeviceIdCommand } from '../../users/application/use-cases/getUserViewModelByDeviceId.useCase';
 import { CheckRefreshToken } from '../guards/jwt-refreshToken.guard';
+import { CheckAccessToken } from '../guards/jwt-accessToken.guard';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -104,6 +105,7 @@ export class AuthController {
 
   @UseGuards(CheckRefreshToken)
   @Post('refresh-token')
+  @HttpCode(200)
   async refreshToken(
     @Req() req: Request & RequestWithDeviceId,
     @Res({ passthrough: true }) res: Response,
@@ -140,7 +142,7 @@ export class AuthController {
     res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }
 
-  @UseGuards(CheckRefreshToken)
+  @UseGuards(CheckAccessToken)
   @Get('me')
   async me(@Req() req: Request & RequestWithDeviceId) {
     return await this.commandBus.execute(
