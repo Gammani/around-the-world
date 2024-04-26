@@ -139,6 +139,9 @@ export class AuthController {
     await this.commandBus.execute(
       new DeleteCurrentSessionByIdCommand(req.deviceId),
     );
+    await this.commandBus.execute(
+      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
+    );
     res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }
 
