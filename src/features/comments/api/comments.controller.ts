@@ -44,34 +44,6 @@ export class CommentsController {
     private readonly userService: UsersService,
     private commandBus: CommandBus,
   ) {}
-
-  // @UseGuards(CheckToken)
-  // @Get(':id')
-  // async getCommentById(
-  //   @Param('id') commentId: string,
-  //   @Req() req: Request & CheckDeviceId,
-  // ) {
-  //   debugger;
-  //   const foundComment: CommentDbType | null = await this.commandBus.execute(
-  //     new GetCommentByIdCommand(commentId),
-  //   );
-  //   if (foundComment) {
-  //     if (req.deviceId) {
-  //       const foundUser: UserDbType | null = await this.commandBus.execute(
-  //         new GetUserByDeviceIdCommand(req.deviceId),
-  //       );
-  //       return await this.commandBus.execute(
-  //         new GetQueryCommentByIdCommand(commentId, foundUser?._id),
-  //       );
-  //     } else {
-  //       return await this.commandBus.execute(
-  //         new GetQueryCommentByIdCommand(commentId),
-  //       );
-  //     }
-  //   } else {
-  //     throw new NotFoundException();
-  //   }
-  // }
   @UseGuards(CheckAccessToken)
   @Get(':id')
   async getCommentById(
@@ -131,6 +103,7 @@ export class CommentsController {
 
   @UseGuards(CheckAccessToken)
   @Delete(':commentId')
+  @HttpCode(204)
   async removeCommentById(
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
@@ -158,6 +131,7 @@ export class CommentsController {
 
   @UseGuards(CheckAccessToken)
   @Put(':commentId/like-status')
+  @HttpCode(204)
   async updateCommentLikeStatus(
     @Body() commentLikeModel: CommentLikeModel,
     @Param('commentId') commentId: string,
