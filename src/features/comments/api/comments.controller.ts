@@ -44,7 +44,7 @@ export class CommentsController {
     private readonly userService: UsersService,
     private commandBus: CommandBus,
   ) {}
-  @UseGuards(CheckAccessToken)
+
   @Get(':id')
   async getCommentById(
     @Param('id') commentId: string,
