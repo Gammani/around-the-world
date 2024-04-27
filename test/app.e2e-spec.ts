@@ -229,6 +229,7 @@ describe('AppController (e2e)', () => {
 
       const loginResponse = await request(app.getHttpServer())
         .post('/auth/login')
+        .set('user-agent', 'asd')
         .send({ loginOrEmail: 'admin', password: 'qwerty' });
       expect(loginResponse.status).toBe(HTTP_STATUSES.OK_200);
       expect(loginResponse.body).toEqual({ accessToken: expect.any(String) });

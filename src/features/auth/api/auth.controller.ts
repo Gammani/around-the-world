@@ -137,10 +137,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     await this.commandBus.execute(
-      new DeleteCurrentSessionByIdCommand(req.deviceId),
+      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
     );
     await this.commandBus.execute(
-      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
+      new DeleteCurrentSessionByIdCommand(req.deviceId),
     );
     res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }
