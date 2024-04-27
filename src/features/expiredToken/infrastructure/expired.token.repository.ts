@@ -31,10 +31,15 @@ export class ExpiredTokenRepository {
       return true;
     }
   }
-  async addExpiredRefreshToken(userId: ObjectId, refreshToken: string) {
+  async addExpiredRefreshToken(
+    deviceId: ObjectId,
+    userId: ObjectId,
+    refreshToken: string,
+  ) {
     debugger;
     const newExpiredRefreshToken = {
       _id: new ObjectId(),
+      deviceId,
       userId,
       refreshToken,
     };

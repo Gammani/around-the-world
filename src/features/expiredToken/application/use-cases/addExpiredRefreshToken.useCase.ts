@@ -25,6 +25,7 @@ export class AddExpiredRefreshTokenUseCase
     );
     if (foundUserId) {
       return await this.expiredTokenRepository.addExpiredRefreshToken(
+        command.deviceId,
         foundUserId,
         command.refreshToken,
       );

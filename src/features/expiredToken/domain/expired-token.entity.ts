@@ -11,6 +11,11 @@ export class ExpiredToken {
   @Prop({
     required: true,
   })
+  deviceId: ObjectId;
+
+  @Prop({
+    required: true,
+  })
   userId: ObjectId;
 
   @Prop({
