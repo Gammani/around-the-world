@@ -2,6 +2,7 @@ import { SecurityDevicesService } from '../application/security.devices.service'
 import {
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -60,7 +61,7 @@ export class SecurityDeviceController {
         new DeleteCurrentSessionByIdCommand(deviceId),
       );
     } else {
-      throw new NotFoundException();
+      throw new ForbiddenException();
     }
   }
 }
