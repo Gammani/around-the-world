@@ -20,12 +20,12 @@ import { EmailManager } from '../adapter/email.manager';
 import { AddDeviceUseCase } from './application/use-cases/addDevice.useCase';
 import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteCurrentSessionUseCase } from './application/use-cases/deleteCurrentSessionById.useCase';
-import { GetDeviceByDeviceIdUseCase } from './application/use-cases/getDeviceByDeviceId.useCase';
+import { GetDeviceFromUserUseCase } from './application/use-cases/getDeviceFromUserUseCase';
 
 const useCases = [
   DeleteCurrentSessionUseCase,
   AddDeviceUseCase,
-  GetDeviceByDeviceIdUseCase,
+  GetDeviceFromUserUseCase,
 ];
 
 @Module({

@@ -16,7 +16,7 @@ import { UserDbType } from '../../types';
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
-import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
+import { GetDeviceFromUserCommand } from '../application/use-cases/getDeviceFromUserUseCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -52,8 +52,8 @@ export class SecurityDeviceController {
     @Req() req: Request & RequestWithDeviceId,
     @Param('deviceId') deviceId: string,
   ) {
-    const foundDevice = await this.commandBus.execute(
-      new GetDeviceByDeviceIdCommand(deviceId),
+    const foundDevice: boolean = await this.commandBus.execute(
+      new GetDeviceFromUserCommand(deviceId, req.deviceId),
     );
     if (foundDevice) {
       await this.commandBus.execute(

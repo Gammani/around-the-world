@@ -41,7 +41,7 @@ export class DeviceRepository {
   }
 
   async findDeviceFromUserId(
-    deviceId: ObjectId,
+    deviceId: string,
     userId: ObjectId,
   ): Promise<boolean> {
     const result = await this.DeviceModel.findOne({
