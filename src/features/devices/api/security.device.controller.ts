@@ -8,9 +8,9 @@ import { UserDbType } from '../../types';
 import { ObjectId } from 'mongodb';
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
-import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
+import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 
-@UseGuards(CheckAccessToken)
+@UseGuards(CheckRefreshToken)
 @Controller('security/devices')
 export class SecurityDeviceController {
   constructor(

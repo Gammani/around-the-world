@@ -42,7 +42,6 @@ export class PasswordAdapter {
         this.configService.get('JWT_ACCESS_SECRET') as Secret,
       ) as TokenPayloadType;
     } catch (error: any) {
-      console.log(error);
       return null;
     }
   }
