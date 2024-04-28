@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
 
 export class DeleteCurrentSessionByIdCommand {
-  constructor(public deviceId: ObjectId) {}
+  constructor(public deviceId: string) {}
 }
 
 @CommandHandler(DeleteCurrentSessionByIdCommand)

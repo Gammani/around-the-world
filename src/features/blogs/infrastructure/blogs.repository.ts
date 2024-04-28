@@ -31,7 +31,6 @@ export class BlogsRepository {
   }
 
   async findBlogById(blogId: string): Promise<BlogDbType | null> {
-    console.log(blogId);
     if (!ObjectId.isValid(blogId)) {
       return null;
     }

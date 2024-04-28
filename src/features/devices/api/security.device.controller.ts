@@ -1,14 +1,22 @@
 import { SecurityDevicesService } from '../application/security.devices.service';
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { DeviceQueryRepository } from '../infrastructure/device.query.repository';
 import { Request } from 'express';
 import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
 import { UsersService } from '../../users/application/users.service';
 import { UserDbType } from '../../types';
-import { ObjectId } from 'mongodb';
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
+import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -44,8 +52,15 @@ export class SecurityDeviceController {
     @Req() req: Request & RequestWithDeviceId,
     @Param('deviceId') deviceId: string,
   ) {
-    await this.commandBus.execute(
-      new DeleteCurrentSessionByIdCommand(new ObjectId(deviceId)),
+    const foundDevice = await this.commandBus.execute(
+      new GetDeviceByDeviceIdCommand(deviceId),
     );
+    if (foundDevice) {
+      await this.commandBus.execute(
+        new DeleteCurrentSessionByIdCommand(deviceId),
+      );
+    } else {
+      throw new NotFoundException();
+    }
   }
 }

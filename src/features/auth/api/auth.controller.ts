@@ -140,7 +140,7 @@ export class AuthController {
       new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
     );
     await this.commandBus.execute(
-      new DeleteCurrentSessionByIdCommand(req.deviceId),
+      new DeleteCurrentSessionByIdCommand(req.deviceId.toString()),
     );
     res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }

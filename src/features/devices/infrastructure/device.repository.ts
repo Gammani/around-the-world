@@ -19,9 +19,9 @@ export class DeviceRepository {
     await createdDeviceDtoModel.save();
     return createdDeviceDtoModel;
   }
-  async findDeviceByDeviceId(deviceId: ObjectId): Promise<DeviceDbType | null> {
-    return this.DeviceModel.findOne({ _id: deviceId });
-  }
+  // async findDeviceByDeviceId(deviceId: ObjectId): Promise<DeviceDbType | null> {
+  //   return this.DeviceModel.findOne({ _id: deviceId });
+  // }
   async findUserIdByDeviceId(deviceId: ObjectId): Promise<ObjectId | null> {
     debugger;
     const foundUser = await this.DeviceModel.findOne({
@@ -54,7 +54,13 @@ export class DeviceRepository {
       return false;
     }
   }
-  async deleteCurrentSessionById(deviceId: ObjectId): Promise<boolean> {
+  async findDeviceByDeviceId(deviceId: string): Promise<DeviceDbType | null> {
+    if (!ObjectId.isValid(deviceId)) {
+      return null;
+    }
+    return this.DeviceModel.findById(deviceId);
+  }
+  async deleteCurrentSessionById(deviceId: string): Promise<boolean> {
     const result = await this.DeviceModel.deleteOne({ _id: deviceId });
     debugger;
     return result.deletedCount === 1;
