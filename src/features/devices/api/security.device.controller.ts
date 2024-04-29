@@ -64,10 +64,14 @@ export class SecurityDeviceController {
         await this.commandBus.execute(
           new GetUserByDeviceIdCommand(req.deviceId),
         );
-      const foundUserFromUriParam = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
-      );
-      if (foundUserFromUriParam === foundUserByDeviceIdFromToken) {
+      const foundUserFromUriParam: UserDbType | null =
+        await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
+        );
+      if (
+        foundUserFromUriParam?._id.toString() ===
+        foundUserByDeviceIdFromToken?._id.toString()
+      ) {
         await this.commandBus.execute(
           new DeleteCurrentSessionByIdCommand(deviceId),
         );
