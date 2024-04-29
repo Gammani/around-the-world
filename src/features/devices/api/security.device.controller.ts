@@ -17,7 +17,7 @@ import { UserDbType } from '../../types';
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
-import { GetDeviceFromUserCommand } from '../application/use-cases/getDeviceFromUserUseCase';
+import { FoundDeviceFromUserCommand } from '../application/use-cases/foundDeviceFromUserUseCase';
 import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
 import { ObjectId } from 'mongodb';
 
@@ -55,27 +55,23 @@ export class SecurityDeviceController {
     @Req() req: Request & RequestWithDeviceId,
     @Param('deviceId') deviceId: string,
   ) {
-    const foundDevice: boolean = await this.commandBus.execute(
-      new GetDeviceFromUserCommand(deviceId, req.deviceId),
+    // нашли юзера из токена
+    const foundUserByDeviceIdFromToken: UserDbType | null =
+      await this.commandBus.execute(new GetUserByDeviceIdCommand(req.deviceId));
+    // есть ли юзер у девайса из ури парам
+    const foundUserFromUriParam = await this.commandBus.execute(
+      new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
     );
-    // сравнить юзера из токена и юзера из парама (форрбиден)
-    // foundDevice возвращает поидее forbidden, проверяется есть ли у юзера из токена айдишка девайса из ури параметра.
-    if (foundDevice) {
-      const foundUserFromToken = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(req.deviceId),
-      );
-      const foundUserFromUriParam = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
-      );
-      if (foundUserFromToken === foundUserFromUriParam) {
-        await this.commandBus.execute(
-          new DeleteCurrentSessionByIdCommand(deviceId),
-        );
-      } else {
-        throw new NotFoundException();
-      }
-    } else {
+    if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
       throw new ForbiddenException();
+    }
+
+    if (foundUserByDeviceIdFromToken) {
+      await this.commandBus.execute(
+        new DeleteCurrentSessionByIdCommand(deviceId),
+      );
+    } else {
+      throw new NotFoundException();
     }
   }
 }
