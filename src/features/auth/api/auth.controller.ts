@@ -97,8 +97,8 @@ export class AuthController {
     const accessToken = await this.jwtService.createAccessJWT(device._id);
     const refreshToken = await this.jwtService.createRefreshJWT(device._id);
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return { accessToken: accessToken };
   }
@@ -117,8 +117,8 @@ export class AuthController {
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
     const refreshToken = await this.jwtService.createRefreshJWT(req.deviceId);
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return { accessToken: accessToken };
   }
@@ -142,7 +142,7 @@ export class AuthController {
     await this.commandBus.execute(
       new DeleteCurrentSessionByIdCommand(req.deviceId.toString()),
     );
-    res.cookie('refreshToken', '', { httpOnly: false, secure: false });
+    res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }
 
   @UseGuards(CheckAccessToken)
