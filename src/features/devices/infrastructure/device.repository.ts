@@ -36,7 +36,7 @@ export class DeviceRepository {
   async findAndUpdateDeviceAfterRefresh(deviceId: ObjectId) {
     return this.DeviceModel.findOneAndUpdate(
       { _id: deviceId },
-      { $set: { lastActiveDate: new Date().toString() } },
+      { $set: { lastActiveDate: new Date().toISOString() } },
     );
   }
 

@@ -138,7 +138,7 @@ export class AuthController {
   @HttpCode(204)
   async logout(
     @Req() req: Request & RequestWithDeviceId,
-    @Res({ passthrough: true }) res: Response,
+    // @Res({ passthrough: true }) res: Response,
   ) {
     await this.commandBus.execute(
       new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
@@ -146,7 +146,7 @@ export class AuthController {
     await this.commandBus.execute(
       new DeleteCurrentSessionByIdCommand(req.deviceId.toString()),
     );
-    res.cookie('refreshToken', '', { httpOnly: true, secure: true });
+    // res.cookie('refreshToken', '', { httpOnly: false, secure: false });
   }
 
   @UseGuards(CheckAccessToken)
