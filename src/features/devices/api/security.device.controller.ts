@@ -23,7 +23,6 @@ import { ObjectId } from 'mongodb';
 import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
 import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
 
-@UseGuards(CheckRefreshToken)
 @Controller('security/devices')
 export class SecurityDeviceController {
   constructor(
@@ -43,6 +42,7 @@ export class SecurityDeviceController {
       );
   }
 
+  @UseGuards(CheckRefreshToken)
   @Delete()
   @HttpCode(204)
   async terminateAllExcludeCurrentSession(
@@ -53,6 +53,7 @@ export class SecurityDeviceController {
     );
   }
 
+  @UseGuards(CheckRefreshToken)
   @Delete(':deviceId')
   @HttpCode(204)
   async terminateSessionById(
