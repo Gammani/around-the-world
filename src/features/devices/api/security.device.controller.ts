@@ -4,6 +4,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Req,
@@ -42,6 +43,7 @@ export class SecurityDeviceController {
   }
 
   @Delete()
+  @HttpCode(204)
   async terminateAllExcludeCurrentSession(
     @Req() req: Request & RequestWithDeviceId,
   ) {
@@ -51,6 +53,7 @@ export class SecurityDeviceController {
   }
 
   @Delete(':deviceId')
+  @HttpCode(204)
   async terminateSessionById(
     @Req() req: Request & RequestWithDeviceId,
     @Param('deviceId') deviceId: string,
