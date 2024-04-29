@@ -18,6 +18,8 @@ import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/delete
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 import { GetDeviceFromUserCommand } from '../application/use-cases/getDeviceFromUserUseCase';
+import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
+import { ObjectId } from 'mongodb';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -56,12 +58,23 @@ export class SecurityDeviceController {
     const foundDevice: boolean = await this.commandBus.execute(
       new GetDeviceFromUserCommand(deviceId, req.deviceId),
     );
+    // сравнить юзера из токена и юзера из парама (форрбиден)
     if (foundDevice) {
-      await this.commandBus.execute(
-        new DeleteCurrentSessionByIdCommand(deviceId),
+      const foundUserFromToken = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(req.deviceId),
       );
+      const foundUserFromUriParam = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
+      );
+      if (foundUserFromToken === foundUserFromUriParam) {
+        await this.commandBus.execute(
+          new DeleteCurrentSessionByIdCommand(deviceId),
+        );
+      } else {
+        throw new ForbiddenException();
+      }
     } else {
-      throw new ForbiddenException();
+      throw new NotFoundException();
     }
   }
 }
