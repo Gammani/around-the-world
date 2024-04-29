@@ -30,12 +30,14 @@ import { IsValidRecoveryCodeConstraint } from '../../infrastructure/decorators/v
 import { IsValidEmailConstraint } from '../../infrastructure/decorators/validate/email.isValid.decorator';
 import { UpdatePasswordUseCase } from './application/use-cases/updatePassword.useCase';
 import { PasswordRecoveryUseCase } from './application/use-cases/passwordRecovery.useCase';
+import { FindAndUpdateDeviceAfterRefreshUseCase } from '../devices/application/use-cases/findAndUpdateDeviceAfterRefresh.useCase';
 
 const useCases = [
   ConfirmEmailUseCase,
   UpdatePasswordUseCase,
   PasswordRecoveryUseCase,
   PasswordRecoveryUseCase,
+  FindAndUpdateDeviceAfterRefreshUseCase,
 ];
 
 @Module({

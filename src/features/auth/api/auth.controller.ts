@@ -39,6 +39,7 @@ import { DeleteCurrentSessionByIdCommand } from '../../devices/application/use-c
 import { GetUserViewModelByDeviceIdCommand } from '../../users/application/use-cases/getUserViewModelByDeviceId.useCase';
 import { CheckRefreshToken } from '../guards/jwt-refreshToken.guard';
 import { CheckAccessToken } from '../guards/jwt-accessToken.guard';
+import { FindAndUpdateDeviceAfterRefreshCommand } from '../../devices/application/use-cases/findAndUpdateDeviceAfterRefresh.useCase';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -116,6 +117,9 @@ export class AuthController {
 
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
     const refreshToken = await this.jwtService.createRefreshJWT(req.deviceId);
+    await this.commandBus.execute(
+      new FindAndUpdateDeviceAfterRefreshCommand(req.deviceId),
+    );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
