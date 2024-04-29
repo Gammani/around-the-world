@@ -62,16 +62,33 @@ export class SecurityDeviceController {
     const foundUserFromUriParam = await this.commandBus.execute(
       new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
     );
+    // if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
+    //   throw new ForbiddenException();
+    // }
+
+    // есть ли у юзера из токена такой айди
+    if (!foundUserByDeviceIdFromToken) {
+      throw new NotFoundException();
+    }
+
+    // а юзер из токена к своему айди стучится
     if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
       throw new ForbiddenException();
     }
+    await this.commandBus.execute(
+      new DeleteCurrentSessionByIdCommand(deviceId),
+    );
 
-    if (foundUserByDeviceIdFromToken) {
-      await this.commandBus.execute(
-        new DeleteCurrentSessionByIdCommand(deviceId),
-      );
-    } else {
-      throw new NotFoundException();
-    }
+    // if (foundUserByDeviceIdFromToken) {
+    //   await this.commandBus.execute(
+    //     new DeleteCurrentSessionByIdCommand(deviceId),
+    //   );
+    // } else {
+    //   if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
+    //     throw new ForbiddenException();
+    //   }
+    //
+    //   throw new NotFoundException();
+    // }
   }
 }
