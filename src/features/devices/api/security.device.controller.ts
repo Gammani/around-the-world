@@ -19,7 +19,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
 import { ObjectId } from 'mongodb';
-import { FoundDeviceFromUserCommand } from '../application/use-cases/foundDeviceFromUserUseCase';
+import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -55,52 +55,27 @@ export class SecurityDeviceController {
     @Req() req: Request & RequestWithDeviceId,
     @Param('deviceId') deviceId: string,
   ) {
-    // нашли юзера из токена
-    const foundUserByDeviceIdFromToken: UserDbType | null =
-      await this.commandBus.execute(new GetUserByDeviceIdCommand(req.deviceId));
-    // есть ли юзер у девайса из ури парам
-    debugger;
-    console.log('user From Token = ', foundUserByDeviceIdFromToken);
-    const foundUserFromUriParam = await this.commandBus.execute(
-      new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
+    const foundDeviceByDeviceId = await this.commandBus.execute(
+      new GetDeviceByDeviceIdCommand(deviceId),
     );
-    debugger;
-    console.log('User From Uri Param = ', foundUserFromUriParam);
-    // if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
-    //   throw new ForbiddenException();
-    // }
 
-    // есть ли у юзера из токена такой айди
-    // да, найти айди из ури у юзера из токена
-    const foundDeviceFromUser = await this.commandBus.execute(
-      new FoundDeviceFromUserCommand(
-        deviceId,
-        foundUserByDeviceIdFromToken!._id,
-      ),
-    );
-    console.log('foundDeviceFromUser = ', foundDeviceFromUser);
-    if (!foundDeviceFromUser) {
+    if (foundDeviceByDeviceId) {
+      const foundUserByDeviceIdFromToken: UserDbType | null =
+        await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(req.deviceId),
+        );
+      const foundUserFromUriParam = await this.commandBus.execute(
+        new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
+      );
+      if (foundUserFromUriParam === foundUserByDeviceIdFromToken) {
+        await this.commandBus.execute(
+          new DeleteCurrentSessionByIdCommand(deviceId),
+        );
+      } else {
+        throw new ForbiddenException();
+      }
+    } else {
       throw new NotFoundException();
     }
-    debugger;
-    // а юзер из токена к своему айди стучится
-    if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
-      throw new ForbiddenException();
-    }
-    await this.commandBus.execute(
-      new DeleteCurrentSessionByIdCommand(deviceId),
-    );
-
-    // if (foundUserByDeviceIdFromToken) {
-    //   await this.commandBus.execute(
-    //     new DeleteCurrentSessionByIdCommand(deviceId),
-    //   );
-    // } else {
-    //   if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
-    //     throw new ForbiddenException();
-    //   }
-    //
-    //   throw new NotFoundException();
-    // }
   }
 }
