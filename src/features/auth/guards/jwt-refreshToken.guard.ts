@@ -19,7 +19,6 @@ export class CheckRefreshToken {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<any> {
-    debugger;
     const req = context.switchToHttp().getRequest();
 
     const cookieRefreshToken = req.cookies.refreshToken;
@@ -27,7 +26,7 @@ export class CheckRefreshToken {
 
     const foundTokenFromExpiredTokens =
       await this.expiredTokenRepository.findToken(cookieRefreshToken);
-    console.log(foundTokenFromExpiredTokens);
+    // console.log(foundTokenFromExpiredTokens);
     if (foundTokenFromExpiredTokens) throw new UnauthorizedException();
 
     const isExpiredToken =

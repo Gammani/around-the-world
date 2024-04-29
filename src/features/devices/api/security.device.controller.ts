@@ -76,12 +76,13 @@ export class SecurityDeviceController {
         foundUserFromUriParam?._id.toString() ===
         foundUserByDeviceIdFromToken?._id.toString()
       ) {
-        await this.commandBus.execute(
-          new AddExpiredRefreshTokenCommand(
-            new ObjectId(deviceId),
-            req.cookies.refreshToken,
-          ),
-        );
+        // УДАЛЯЮ ТЕКУЩИЙ РЕФРЕШ, ХОЯТ НЕНАДО!!!
+        // await this.commandBus.execute(
+        //   new AddExpiredRefreshTokenCommand(
+        //     new ObjectId(deviceId),
+        //     req.cookies.refreshToken,
+        //   ),
+        // );
         await this.commandBus.execute(
           new DeleteCurrentSessionByIdCommand(deviceId),
         );

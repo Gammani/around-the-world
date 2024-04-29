@@ -62,7 +62,6 @@ export class DeviceRepository {
   }
   async deleteCurrentSessionById(deviceId: string): Promise<boolean> {
     const result = await this.DeviceModel.deleteOne({ _id: deviceId });
-    debugger;
     return result.deletedCount === 1;
   }
   async deleteAllSessionExcludeCurrent(deviceId: ObjectId) {
