@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { DeviceDbType } from '../../../types';
 import { DeviceRepository } from '../../infrastructure/device.repository';
 import { ObjectId } from 'mongodb';
 
@@ -17,14 +16,14 @@ export class GetDeviceFromUserUseCase
   constructor(private deviceRepository: DeviceRepository) {}
 
   async execute(command: GetDeviceFromUserCommand): Promise<boolean> {
-    const foundUserId: ObjectId | null =
+    const foundUserIdByToken: ObjectId | null =
       await this.deviceRepository.findUserIdByDeviceId(
         command.deviceIdFromToken,
       );
-    if (foundUserId) {
+    if (foundUserIdByToken) {
       return await this.deviceRepository.findDeviceFromUserId(
         command.deviceIdFromUri,
-        foundUserId,
+        foundUserIdByToken,
       );
     } else {
       return false;

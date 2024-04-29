@@ -59,6 +59,7 @@ export class SecurityDeviceController {
       new GetDeviceFromUserCommand(deviceId, req.deviceId),
     );
     // сравнить юзера из токена и юзера из парама (форрбиден)
+    // foundDevice возвращает поидее forbidden, проверяется есть ли у юзера из токена айдишка девайса из ури параметра.
     if (foundDevice) {
       const foundUserFromToken = await this.commandBus.execute(
         new GetUserByDeviceIdCommand(req.deviceId),
@@ -71,10 +72,10 @@ export class SecurityDeviceController {
           new DeleteCurrentSessionByIdCommand(deviceId),
         );
       } else {
-        throw new ForbiddenException();
+        throw new NotFoundException();
       }
     } else {
-      throw new NotFoundException();
+      throw new ForbiddenException();
     }
   }
 }
