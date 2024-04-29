@@ -17,9 +17,9 @@ import { UserDbType } from '../../types';
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
-import { FoundDeviceFromUserCommand } from '../application/use-cases/foundDeviceFromUserUseCase';
 import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
 import { ObjectId } from 'mongodb';
+import { FoundDeviceFromUserCommand } from '../application/use-cases/foundDeviceFromUserUseCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -59,18 +59,30 @@ export class SecurityDeviceController {
     const foundUserByDeviceIdFromToken: UserDbType | null =
       await this.commandBus.execute(new GetUserByDeviceIdCommand(req.deviceId));
     // есть ли юзер у девайса из ури парам
+    debugger;
+    console.log('user From Token = ', foundUserByDeviceIdFromToken);
     const foundUserFromUriParam = await this.commandBus.execute(
       new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
     );
+    debugger;
+    console.log('User From Uri Param = ', foundUserFromUriParam);
     // if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
     //   throw new ForbiddenException();
     // }
 
     // есть ли у юзера из токена такой айди
-    if (!foundUserByDeviceIdFromToken) {
+    // да, найти айди из ури у юзера из токена
+    const foundDeviceFromUser = await this.commandBus.execute(
+      new FoundDeviceFromUserCommand(
+        deviceId,
+        foundUserByDeviceIdFromToken!._id,
+      ),
+    );
+    console.log('foundDeviceFromUser = ', foundDeviceFromUser);
+    if (!foundDeviceFromUser) {
       throw new NotFoundException();
     }
-
+    debugger;
     // а юзер из токена к своему айди стучится
     if (foundUserFromUriParam !== foundUserByDeviceIdFromToken) {
       throw new ForbiddenException();
