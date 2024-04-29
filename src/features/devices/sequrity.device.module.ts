@@ -22,12 +22,14 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteCurrentSessionUseCase } from './application/use-cases/deleteCurrentSessionById.useCase';
 import { FoundDeviceFromUserUseCase } from './application/use-cases/foundDeviceFromUserUseCase';
 import { GetUserByDeviceIdUseCase } from '../users/application/use-cases/getUserByDeviceId.useCase';
+import { GetDeviceByDeviceIdUseCase } from './application/use-cases/getDeviceByDeviceId.useCase';
 
 const useCases = [
   DeleteCurrentSessionUseCase,
   AddDeviceUseCase,
   FoundDeviceFromUserUseCase,
   GetUserByDeviceIdUseCase,
+  GetDeviceByDeviceIdUseCase,
 ];
 
 @Module({
