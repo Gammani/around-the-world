@@ -21,6 +21,7 @@ import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
 import { ObjectId } from 'mongodb';
 import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
+import { DeleteAllSessionExcludeCurrentCommand } from '../application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -47,8 +48,9 @@ export class SecurityDeviceController {
   async terminateAllExcludeCurrentSession(
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    await this.securityDeviceService.deleteAllSessionExcludeCurrent(
-      req.deviceId,
+    debugger;
+    await this.commandBus.execute(
+      new DeleteAllSessionExcludeCurrentCommand(req.deviceId),
     );
   }
 

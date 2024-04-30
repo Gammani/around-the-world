@@ -24,6 +24,7 @@ import { FoundDeviceFromUserUseCase } from './application/use-cases/foundDeviceF
 import { GetUserByDeviceIdUseCase } from '../users/application/use-cases/getUserByDeviceId.useCase';
 import { GetDeviceByDeviceIdUseCase } from './application/use-cases/getDeviceByDeviceId.useCase';
 import { AddExpiredRefreshTokenUseCase } from '../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
+import { DeleteAllSessionExcludeCurrentUseCase } from './application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 
 const useCases = [
   DeleteCurrentSessionUseCase,
@@ -32,6 +33,7 @@ const useCases = [
   GetUserByDeviceIdUseCase,
   GetDeviceByDeviceIdUseCase,
   AddExpiredRefreshTokenUseCase,
+  DeleteAllSessionExcludeCurrentUseCase,
 ];
 
 @Module({

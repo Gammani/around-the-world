@@ -65,7 +65,7 @@ export class DeviceRepository {
     return result.deletedCount === 1;
   }
   async deleteAllSessionExcludeCurrent(deviceId: ObjectId) {
-    this.DeviceModel.deleteMany({
+    await this.DeviceModel.deleteMany({
       _id: { $ne: deviceId },
     });
     return;
