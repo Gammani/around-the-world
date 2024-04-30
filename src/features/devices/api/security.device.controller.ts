@@ -21,7 +21,6 @@ import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 import { GetUserByDeviceIdCommand } from '../../users/application/use-cases/getUserByDeviceId.useCase';
 import { ObjectId } from 'mongodb';
 import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
-import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -76,13 +75,6 @@ export class SecurityDeviceController {
         foundUserFromUriParam?._id.toString() ===
         foundUserByDeviceIdFromToken?._id.toString()
       ) {
-        // УДАЛЯЮ ТЕКУЩИЙ РЕФРЕШ, ХОЯТ НЕНАДО!!!
-        // await this.commandBus.execute(
-        //   new AddExpiredRefreshTokenCommand(
-        //     new ObjectId(deviceId),
-        //     req.cookies.refreshToken,
-        //   ),
-        // );
         await this.commandBus.execute(
           new DeleteCurrentSessionByIdCommand(deviceId),
         );

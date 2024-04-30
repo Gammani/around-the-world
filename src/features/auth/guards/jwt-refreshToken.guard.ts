@@ -7,6 +7,7 @@ import {
 import { ExpiredTokenRepository } from '../../expiredToken/infrastructure/expired.token.repository';
 import { JwtService } from '../application/jwt.service';
 import { TokenPayloadType } from '../../types';
+import { DeviceRepository } from '../../devices/infrastructure/device.repository';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {}
@@ -16,6 +17,7 @@ export class CheckRefreshToken {
   constructor(
     private expiredTokenRepository: ExpiredTokenRepository,
     private jwtService: JwtService,
+    private deviceRepository: DeviceRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<any> {
@@ -36,7 +38,15 @@ export class CheckRefreshToken {
     const foundDeviceIdByRefreshToken: TokenPayloadType | null =
       await this.jwtService.verifyRefreshToken(cookieRefreshToken);
     if (foundDeviceIdByRefreshToken) {
-      req.deviceId = foundDeviceIdByRefreshToken.deviceId;
+      const foundDeviceByDeviceId =
+        await this.deviceRepository.findDeviceByDeviceId(
+          foundDeviceIdByRefreshToken.deviceId.toString(),
+        );
+      if (foundDeviceByDeviceId) {
+        req.deviceId = foundDeviceIdByRefreshToken.deviceId;
+      } else {
+        throw new UnauthorizedException();
+      }
     } else {
       throw new UnauthorizedException();
     }
